@@ -1,0 +1,23 @@
+{
+  "name": "gtd-d3-visualization",
+  "version": "1.0.0",
+  "description": "Global Terrorism Database visualization project using D3.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vladimir-125/gtd-d3-visualization.git"
+  },
+  "keywords": [],
+  "author": "Vladimir Egay <vova.e.125@gmail.com> (https://github.com/Vladimir-125/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Vladimir-125/gtd-d3-visualization/issues"
+  },
+  "homepage": "https://github.com/Vladimir-125/gtd-d3-visualization#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
