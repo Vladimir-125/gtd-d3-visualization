@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Vladimir-125/gtd-d3-visualization#readme",
   "dependencies": {
+    "csv-parser": "^2.3.3",
     "express": "^4.17.1"
   }
 }

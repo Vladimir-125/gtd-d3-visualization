@@ -13,6 +13,10 @@ app.get('/', (req, res)=>{
     return res.sendFile(__dirname + '/index.html')
 });
 
+app.get('/map', (req, res)=>{
+    return res.sendFile(__dirname + '/leaflet.html')
+});
+
 app.get('/data', (req, res)=>{
     let rawdata = fs.readFileSync('data.json');
     let data = JSON.parse(rawdata);

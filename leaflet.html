@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #map {
+            width: 600px;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <div id='map'></div>
+    <script>
+        
+        async function drawMap(){
+            try {
+                const res = await fetch('/data')
+                const data = await res.json()
+                console.log(data)
+                const map = L.map('map').setView([11.206051, 122.447886], 0);
+                const mapLink =
+                '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+                L.tileLayer(
+                'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; ' + mapLink + ' Contributors',
+                    maxZoom: 18,
+                }).addTo(map);
+
+                for (var i = 0; i < data.length; i++) {
+                marker = new L.marker([data[i].latitude, data[i].longitude])
+                    .bindPopup(data[i].eventid)
+                    .addTo(map);
+                }
+      
+            } catch {
+                console.log('Some Error occured')
+            }
+        }
+        drawMap()
+    </script>
+</body>
+</html>
