@@ -17,6 +17,14 @@ app.get('/map', (req, res)=>{
     return res.sendFile(__dirname + '/leaflet.html')
 });
 
+app.get('/lasso-demo', (req, res)=>{
+    return res.sendFile(__dirname + '/lasso_demo.html')
+});
+
+app.get('/lasso', (req, res)=>{
+    return res.sendFile(__dirname + '/lasso.html')
+});
+
 app.get('/data', (req, res)=>{
     let rawdata = fs.readFileSync('data.json');
     let data = JSON.parse(rawdata);

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #map {
+            width: 1200px;
+            height: 800px;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    <script src="https://unpkg.com/leaflet-lasso@2.2.3/dist/leaflet-lasso.umd.js"></script>
+    <!-- <script src="../dist/leaflet-lasso.umd.js"></script> -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <div id='map'></div>
+    <div id="sidebar">
+        <div>
+            <button id="toggleLasso" type="button" class="btn btn-primary btn-sm">Toggle Lasso</button>
+            <br><br>
+            <label><input type="radio" name="containOrIntersect" id="contain" checked> Contain</label>
+            <label class="ml-2"><input type="radio" name="containOrIntersect" id="intersect"> Intersect</label>
+        </div>
+        <br>
+        <div id="lassoEnabled">Disabled</div>
+        <br>
+        <div id="lassoResult"></div>
+    </div>
+    <script>
+        const toggleLasso = document.querySelector('#toggleLasso');
+    const contain = document.querySelector('#contain');
+    const intersect = document.querySelector('#intersect');
+    const lassoEnabled = document.querySelector('#lassoEnabled');
+    const lassoResult = document.querySelector('#lassoResult');
+    const map = L.map('map').setView([11.206051, 122.447886], 2);
+    const lassoControl = L.control.lasso().addTo(map);
+        async function drawMap(){
+            try {
+                const res = await fetch('/data')
+                const data = await res.json()
+                const mapLink =
+                '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+                L.tileLayer(
+                'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; ' + mapLink + ' Contributors',
+                    maxZoom: 18,
+                }).addTo(map);
+                
+                const markers = L.markerClusterGroup();
+                for (var i = 0; i < data.length; i++) {
+                    const marker = new L.marker([data[i].latitude, data[i].longitude])
+                        .bindPopup(data[i].eventid)
+                    markers.addLayer(marker);
+                }
+                map.addLayer(markers);
+
+                        
+                function resetSelectedState() {
+                    map.eachLayer(layer => {
+                        if (layer instanceof L.Marker) {
+                            // layer.setIcon(new L.Icon.Default());
+                        } else if (layer instanceof L.Path) {
+                            layer.setStyle({ color: '#3388ff' });
+                        }
+                    });
+
+                    lassoResult.innerHTML = '';
+                }
+                function setSelectedLayers(layers) {
+                    resetSelectedState();
+
+                    layers.forEach(layer => {
+                        if (layer instanceof L.Marker) {
+                            layer.setIcon(new L.Icon.Default({ className: 'selected '}));
+                        } else if (layer instanceof L.Path) {
+                            layer.setStyle({ color: '#ff4620' });
+                        }
+                    });
+                    console.log(layers)
+                    lassoResult.innerHTML = layers.length ? `Selected ${layers.length} layers` : '';
+                }
+
+                map.on('mousedown', () => {
+                    resetSelectedState();
+                });
+                map.on('lasso.finished', event => {
+                    setSelectedLayers(event.layers);
+                });
+                map.on('lasso.enabled', () => {
+                    lassoEnabled.innerHTML = 'Enabled';
+                    resetSelectedState();
+                });
+                map.on('lasso.disabled', () => {
+                    lassoEnabled.innerHTML = 'Disabled';
+                });
+
+                toggleLasso.addEventListener('click', () => {
+                    if (lassoControl.enabled()) {
+                        lassoControl.disable();
+                    } else {
+                        lassoControl.enable();
+                    }
+                });
+                contain.addEventListener('change', () => {
+                    lassoControl.setOptions({ intersect: intersect.checked });
+                });
+                intersect.addEventListener('change', () => {
+                    lassoControl.setOptions({ intersect: intersect.checked });
+                });
+            }catch{
+                console.log('Some error occured!')
+            }
+        }
+        drawMap()
+    </script>
+</body>
+</html>
