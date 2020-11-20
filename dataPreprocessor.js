@@ -2,8 +2,9 @@ const csv = require('csv-parser');
 const fs = require('fs');
 
 const data = []
-
-fs.createReadStream('./data/sample.csv')
+// const file = './data/sample.csv';
+const file = './raw_data/globalterrorismdb_0718dist.csv';
+fs.createReadStream(file)
   .pipe(csv())
   .on('data', (row) => {
     if(row['eventid']!== '' && row['latitude']!== '' && row['longitude']!== ''){
