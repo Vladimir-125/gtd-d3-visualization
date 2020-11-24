@@ -35,12 +35,12 @@
     </div>
     <script>
         const toggleLasso = document.querySelector('#toggleLasso');
-    const contain = document.querySelector('#contain');
-    const intersect = document.querySelector('#intersect');
-    const lassoEnabled = document.querySelector('#lassoEnabled');
-    const lassoResult = document.querySelector('#lassoResult');
-    const map = L.map('map').setView([11.206051, 122.447886], 2);
-    const lassoControl = L.control.lasso().addTo(map);
+        const contain = document.querySelector('#contain');
+        const intersect = document.querySelector('#intersect');
+        const lassoEnabled = document.querySelector('#lassoEnabled');
+        const lassoResult = document.querySelector('#lassoResult');
+        const map = L.map('map').setView([11.206051, 122.447886], 2);
+        const lassoControl = L.control.lasso().addTo(map);
         async function drawMap(){
             try {
                 const res = await fetch('/data')

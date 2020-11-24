@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
-        #map {
-            width: 1200px;
-            height: 800px;
-        }
-    </style>
 </head>
 <body>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin="" />
@@ -34,7 +28,12 @@
                     maxZoom: 18,
                 }).addTo(map);
                 
-                const markers = L.markerClusterGroup();
+                const markers = L.markerClusterGroup({
+                    iconCreateFunction: function(cluster) {
+                        return L.divIcon(clusterStyler(cluster.getChildCount()));
+                    }
+                });
+
                 for (var i = 0; i < data.length; i++) {
                     const marker = new L.marker([data[i].latitude, data[i].longitude])
                         .bindPopup(data[i].eventid)
@@ -45,7 +44,124 @@
                 console.log('Some error occured!')
             }
         }
+        function clusterStyler(elements){
+            if(elements > 2000){
+                return { html: '<span class="l4"><b >' + elements + '</b></span>' }
+            }else if(elements > 1000){
+                return { html: '<span class="l3"><b >' + elements + '</b></span>' }
+            }else if(elements > 500){
+                return { html: '<span class="l2"><b >' + elements + '</b></span>' }
+            }else{
+                return { html: '<span class="l1"><b >' + elements + '</b></span>' }
+            }
+        }
         drawMap()
     </script>
+    <style>
+        #map {
+            width: 1200px;
+            height: 800px;
+        }
+        .l1{
+            width: 35px;
+            height: 35px;
+            margin-left: 5px;
+            margin-top: 15px;
+            border-radius: 50%;
+            background-color: rgba(110, 204, 57, 0.4);
+            padding: 10px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        .l1 > b{
+            width: 25px;
+            height: 25px;
+            margin-top: -5px;
+            margin-left: -5px;
+            border-radius: 50%;
+            font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+            background-color: rgba(110, 204, 57, 0.6);
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+            position: absolute;
+        }
+        .l2{
+            width: 35px;
+            height: 35px;
+            margin-left: 5px;
+            margin-top: 15px;
+            border-radius: 50%;
+            background-color:rgba(240, 194, 12, 0.4);
+            padding: 10px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        .l2 > b{
+            width: 25px;
+            height: 25px;
+            margin-top: -5px;
+            margin-left: -5px;
+            border-radius: 50%;
+            font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+            background-color:rgba(240, 194, 12, 0.6);
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+            position: absolute;
+        }
+        .l3{
+            width: 35px;
+            height: 35px;
+            margin-left: 5px;
+            margin-top: 15px;
+            border-radius: 50%;
+            background-color:rgba(241, 128, 23, 0.4);
+            padding: 10px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        .l3 > b{
+            width: 25px;
+            height: 25px;
+            margin-top: -5px;
+            margin-left: -5px;
+            border-radius: 50%;
+            font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+            background-color: rgba(241, 63, 23, 0.6);
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+            position: absolute;
+        }
+        .l4{
+            width: 35px;
+            height: 35px;
+            margin-left: 5px;
+            margin-top: 15px;
+            border-radius: 50%;
+            background-color: rgba(249, 3, 3, 0.4);
+            padding: 10px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        .l4 > b{
+            width: 25px;
+            height: 25px;
+            margin-top: -5px;
+            margin-left: -5px;
+            border-radius: 50%;
+            font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+            background-color: rgba(249, 3, 3, 1);
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+            position: absolute;
+        }
+        .leaflet-div-icon {
+            background: none;
+            border: none;
+        }
+    </style>
 </body>
 </html>
