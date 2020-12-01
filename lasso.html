@@ -69,16 +69,15 @@
 
 
     <script>
-
-        const toggleLasso = document.querySelector('#toggleLasso');
-        const contain = document.querySelector('#contain');
-        const intersect = document.querySelector('#intersect');
-        const lassoEnabled = document.querySelector('#lassoEnabled');
-        const lassoResult = document.querySelector('#lassoResult');
         
         let data;
         const map = L.map('map').setView([39.541139, -8.525969], 2);
-        let markers = L.markerClusterGroup();
+        const clusterGroupOptions = {
+                    iconCreateFunction: function(cluster) {
+                        return L.divIcon(clusterStyler(cluster.getChildCount()));
+                    }
+                };
+        let markers = L.markerClusterGroup(clusterGroupOptions);
 
         $( document ).ready(async ()=> {
             const res = await fetch('/data')
@@ -86,6 +85,17 @@
             drawSlider()
             drawMap(data)
         });
+        function clusterStyler(elements){
+            if(elements > 2000){
+                return { html: '<span class="l4"><b >' + elements + '</b></span>' }
+            }else if(elements > 1000){
+                return { html: '<span class="l3"><b >' + elements + '</b></span>' }
+            }else if(elements > 500){
+                return { html: '<span class="l2"><b >' + elements + '</b></span>' }
+            }else{
+                return { html: '<span class="l1"><b >' + elements + '</b></span>' }
+            }
+        }
         
         function drawMap(data){
             try {
@@ -109,13 +119,11 @@
                 function resetSelectedState() {
                     map.eachLayer(layer => {
                         if (layer instanceof L.Marker) {
-                            // layer.setIcon(new L.Icon.Default());
                         } else if (layer instanceof L.Path) {
                             layer.setStyle({ color: '#3388ff' });
                         }
                     });
 
-                    lassoResult.innerHTML = '';
                 }
 
                 function setSelectedLayers(layers) {
@@ -128,7 +136,6 @@
                         }
                     });
                     console.log(layers)
-                    lassoResult.innerHTML = layers.length ? `Selected ${layers.length} layers` : '';
                 }
 
                 map.on('mousedown', () => {
@@ -140,28 +147,7 @@
                 });
 
                 map.on('lasso.enabled', () => {
-                    lassoEnabled.innerHTML = 'Enabled';
                     resetSelectedState();
-                });
-
-                map.on('lasso.disabled', () => {
-                    lassoEnabled.innerHTML = 'Disabled';
-                });
-
-                toggleLasso.addEventListener('click', () => {
-                    if (lassoControl.enabled()) {
-                        lassoControl.disable();
-                    } else {
-                        lassoControl.enable();
-                    }
-                });
-
-                contain.addEventListener('change', () => {
-                    lassoControl.setOptions({ intersect: intersect.checked });
-                });
-
-                intersect.addEventListener('change', () => {
-                    lassoControl.setOptions({ intersect: intersect.checked });
                 });
 
             }catch{
@@ -203,7 +189,6 @@
             }
         }
 
-        //let sample = [{"eventid":"197001190002","latitude":"47.610786","longitude":"-122.331306"},{"eventid":"197001190003","latitude":"47.610786","longitude":"-122.331306"},{"eventid":"197001190004","latitude":"40.717892","longitude":"-74.067467"},{"eventid":"197001200001","latitude":"14.622869","longitude":"-90.529068"},{"eventid":"197001210001","latitude":"14.67428","longitude":"121.057495"},{"eventid":"197001220001","latitude":"10.482834","longitude":"-66.962128"},{"eventid":"197001220002","latitude":"42.47031","longitude":"-96.413949"},{"eventid":"197001250001","latitude":"33.60651","longitude":"-88.650419"}]
         function dataExtracter(mindate, maxdate, data){
             let rangedData = data;
             let filteredData = new Array();
@@ -230,7 +215,6 @@
             }
         }     
 
-        //console.log(dataExtracter("19700119","19700122",data));
         function drawTime(time) {
             Highcharts.chart('container', {
             chart: {
@@ -243,7 +227,7 @@
                             // items : selected cases occured between startingdate ~ endingdate
                             let items = dataExtracter(startingDate, endingDate, data)
                             map.removeLayer(markers);
-                            markers = L.markerClusterGroup();
+                            markers = L.markerClusterGroup(clusterGroupOptions);
                             for (var i = 0; i < items.length; i++) {
                             const marker = new L.marker([items[i].latitude, items[i].longitude])
                                 .bindPopup(items[i].eventid)
@@ -253,7 +237,7 @@
                         }
                         else{
                             map.removeLayer(markers);
-                            markers = L.markerClusterGroup();
+                            markers = L.markerClusterGroup(clusterGroupOptions);
                             for (var i = 0; i < data.length; i++) {
                             const marker = new L.marker([data[i].latitude, data[i].longitude])
                                 .bindPopup(data[i].eventid)
@@ -325,8 +309,111 @@
         <div id="container"></div>
     </figure>
 
-    <script>
-
-    </script>
+    <style>
+        #map {
+            width: 1200px;
+            height: 800px;
+        }
+        .l1{
+            width: 35px;
+            height: 35px;
+            margin-left: 5px;
+            margin-top: 15px;
+            border-radius: 50%;
+            background-color: rgba(110, 204, 57, 0.4);
+            padding: 10px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        .l1 > b{
+            width: 25px;
+            height: 25px;
+            margin-top: -5px;
+            margin-left: -5px;
+            border-radius: 50%;
+            font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+            background-color: rgba(110, 204, 57, 0.6);
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+            position: absolute;
+        }
+        .l2{
+            width: 35px;
+            height: 35px;
+            margin-left: 5px;
+            margin-top: 15px;
+            border-radius: 50%;
+            background-color:rgba(240, 194, 12, 0.4);
+            padding: 10px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        .l2 > b{
+            width: 25px;
+            height: 25px;
+            margin-top: -5px;
+            margin-left: -5px;
+            border-radius: 50%;
+            font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+            background-color:rgba(240, 194, 12, 0.6);
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+            position: absolute;
+        }
+        .l3{
+            width: 35px;
+            height: 35px;
+            margin-left: 5px;
+            margin-top: 15px;
+            border-radius: 50%;
+            background-color:rgba(241, 128, 23, 0.4);
+            padding: 10px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        .l3 > b{
+            width: 25px;
+            height: 25px;
+            margin-top: -5px;
+            margin-left: -5px;
+            border-radius: 50%;
+            font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+            background-color: rgba(241, 63, 23, 0.6);
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+            position: absolute;
+        }
+        .l4{
+            width: 35px;
+            height: 35px;
+            margin-left: 5px;
+            margin-top: 15px;
+            border-radius: 50%;
+            background-color: rgba(249, 3, 3, 0.4);
+            padding: 10px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        .l4 > b{
+            width: 25px;
+            height: 25px;
+            margin-top: -5px;
+            margin-left: -5px;
+            border-radius: 50%;
+            font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+            background-color: rgba(249, 3, 3, 1);
+            padding: 10px;
+            text-align: center;
+            vertical-align: middle;
+            position: absolute;
+        }
+        .leaflet-div-icon {
+            background: none;
+            border: none;
+        }
+    </style>
 </body>
 </html>
