@@ -6,15 +6,14 @@
     <title>Document</title>
     <style>
         #map {
-            width: 1200px;
-            height: 800px;
+            width: 1000px;
+            height: 550px;
         }
-
         .highcharts-figure, .highcharts-data-table table {
         width: 1000px;
         margin: 10px;
         }
-
+        
         .highcharts-data-table table {
             font-family: Verdana, sans-serif;
             border-collapse: collapse;
@@ -43,12 +42,11 @@
         .highcharts-data-table tr:hover {
         background: #f1f7ff;
         }
-
     </style>
 </head>
+<script src="vendor/jquery/jquery.min.js"></script>
 
 <body>
-    <script src="vendor/jquery/jquery.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
     <script src="https://unpkg.com/leaflet-lasso@2.2.3/dist/leaflet-lasso.umd.js"></script>
@@ -57,7 +55,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    
+
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/data.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
@@ -69,29 +67,18 @@
         <div id="container"></div>
     </figure>
 
-    <div id="sidebar">
-        <div>
-            <button id="toggleLasso" type="button" class="btn btn-primary btn-sm">Toggle Lasso</button>
-            <br><br>
-            <label><input type="radio" name="containOrIntersect" id="contain" checked> Contain</label>
-            <label class="ml-2"><input type="radio" name="containOrIntersect" id="intersect"> Intersect</label>
-        </div>
-        <br>
-        <div id="lassoEnabled">Disabled</div>
-        <br>
-        <div id="lassoResult"></div>
-    </div>
 
     <script>
+
         const toggleLasso = document.querySelector('#toggleLasso');
         const contain = document.querySelector('#contain');
         const intersect = document.querySelector('#intersect');
         const lassoEnabled = document.querySelector('#lassoEnabled');
         const lassoResult = document.querySelector('#lassoResult');
-        const map = L.map('map').setView([11.206051, 122.447886], 2);
-        const lassoControl = L.control.lasso().addTo(map);
-
+        
         let data;
+        const map = L.map('map').setView([39.541139, -8.525969], 2);
+        let markers = L.markerClusterGroup();
 
         $( document ).ready(async ()=> {
             const res = await fetch('/data')
@@ -99,26 +86,26 @@
             drawSlider()
             drawMap(data)
         });
-
-        function drawMap(){
+        
+        function drawMap(data){
             try {
+                const lassoControl = L.control.lasso().addTo(map);
                 const mapLink =
                 '<a href="http://openstreetmap.org">OpenStreetMap</a>';
                 L.tileLayer(
                 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; ' + mapLink + ' Contributors',
-                    maxZoom: 18,
+                    maxZoom: 10,
+                    minZoom: 2
                 }).addTo(map);
                 
-                const markers = L.markerClusterGroup();
                 for (var i = 0; i < data.length; i++) {
                     const marker = new L.marker([data[i].latitude, data[i].longitude])
                         .bindPopup(data[i].eventid)
                     markers.addLayer(marker);
                 }
                 map.addLayer(markers);
-
-                        
+        
                 function resetSelectedState() {
                     map.eachLayer(layer => {
                         if (layer instanceof L.Marker) {
@@ -130,6 +117,7 @@
 
                     lassoResult.innerHTML = '';
                 }
+
                 function setSelectedLayers(layers) {
                     resetSelectedState();
                     layers.forEach(layer => {
@@ -146,13 +134,16 @@
                 map.on('mousedown', () => {
                     resetSelectedState();
                 });
+
                 map.on('lasso.finished', event => {
                     setSelectedLayers(event.layers);
                 });
+
                 map.on('lasso.enabled', () => {
                     lassoEnabled.innerHTML = 'Enabled';
                     resetSelectedState();
                 });
+
                 map.on('lasso.disabled', () => {
                     lassoEnabled.innerHTML = 'Disabled';
                 });
@@ -164,12 +155,15 @@
                         lassoControl.enable();
                     }
                 });
+
                 contain.addEventListener('change', () => {
                     lassoControl.setOptions({ intersect: intersect.checked });
                 });
+
                 intersect.addEventListener('change', () => {
                     lassoControl.setOptions({ intersect: intersect.checked });
                 });
+
             }catch{
                 console.log('Some error occured!')
             }
@@ -189,6 +183,7 @@
             return -1;
         }
 
+        // date type to YYYYMMDD
         function dateFilter(min, max){
             try{
                 let mintxt = new Date(min);
@@ -201,15 +196,14 @@
                 let maxmonth = getMonth(maxtxt.toString().split(" ")[1]);
                 let maxday = maxtxt.toString().split(" ")[2];
                 let maxdate = maxyear+maxmonth+maxday;
-                console.log(mindate);
-                console.log(maxdate);
+                let output = mindate+"_"+maxdate;
+                return output;
             }catch{
                 console.log('Some error occured!');
             }
         }
 
-        // let sample = [{"eventid":"197001190002","latitude":"47.610786","longitude":"-122.331306"},{"eventid":"197001190003","latitude":"47.610786","longitude":"-122.331306"},{"eventid":"197001190004","latitude":"40.717892","longitude":"-74.067467"},{"eventid":"197001200001","latitude":"14.622869","longitude":"-90.529068"},{"eventid":"197001210001","latitude":"14.67428","longitude":"121.057495"},{"eventid":"197001220001","latitude":"10.482834","longitude":"-66.962128"},{"eventid":"197001220002","latitude":"42.47031","longitude":"-96.413949"},{"eventid":"197001250001","latitude":"33.60651","longitude":"-88.650419"}]
-        // dataExtracter("19700119","19700122",sample);
+        //let sample = [{"eventid":"197001190002","latitude":"47.610786","longitude":"-122.331306"},{"eventid":"197001190003","latitude":"47.610786","longitude":"-122.331306"},{"eventid":"197001190004","latitude":"40.717892","longitude":"-74.067467"},{"eventid":"197001200001","latitude":"14.622869","longitude":"-90.529068"},{"eventid":"197001210001","latitude":"14.67428","longitude":"121.057495"},{"eventid":"197001220001","latitude":"10.482834","longitude":"-66.962128"},{"eventid":"197001220002","latitude":"42.47031","longitude":"-96.413949"},{"eventid":"197001250001","latitude":"33.60651","longitude":"-88.650419"}]
         function dataExtracter(mindate, maxdate, data){
             let rangedData = data;
             let filteredData = new Array();
@@ -229,20 +223,33 @@
         async function drawSlider(){
             try {
                 const res = await fetch('/time')
-                const data = await res.json()
-                drawTime(data)
+                const time = await res.json()
+                drawTime(time)
             }catch{
                 console.log('Some error occured!')
             }
-        }
+        }     
 
-        function drawTime(data) {
+        //console.log(dataExtracter("19700119","19700122",data));
+        function drawTime(time) {
             Highcharts.chart('container', {
             chart: {
                 events: {
                     selection: function(event) {
                         if(event.xAxis != null){
-                            dateFilter(event.xAxis[0].min,event.xAxis[0].max);
+                            let output = dateFilter(event.xAxis[0].min,event.xAxis[0].max);
+                            let startingDate = output.split("_")[0]
+                            let endingDate = output.split("_")[1]
+                            // items : selected cases occured between startingdate ~ endingdate
+                            let items = dataExtracter(startingDate, endingDate, data)
+                            map.removeLayer(markers);
+                            markers = L.markerClusterGroup();
+                            for (var i = 0; i < items.length; i++) {
+                            const marker = new L.marker([items[i].latitude, items[i].longitude])
+                                .bindPopup(items[i].eventid)
+                            markers.addLayer(marker);
+                            }
+                            map.addLayer(markers)
                         }
                         else
                             console.log("selection: reset");
@@ -298,7 +305,7 @@
             series: [{
                 type: 'area',
                 name: '# of cases',
-                data: data
+                data: time
             }]
             });
         }
@@ -309,5 +316,8 @@
         <div id="container"></div>
     </figure>
 
+    <script>
+
+    </script>
 </body>
 </html>

@@ -25,10 +25,21 @@ app.get('/lasso', (req, res)=>{
     return res.sendFile(__dirname + '/lasso.html')
 });
 
+app.get('/timeseries', (req, res)=>{
+    return res.sendFile(__dirname + '/timeseries.html')
+});
+
 app.get('/data', (req, res)=>{
     let rawdata = fs.readFileSync('data.json');
     let data = JSON.parse(rawdata);
     return res.status(200).json(data);
 });
+
+app.get('/time', (req, res)=>{
+    let rawdata = fs.readFileSync('data/dateToUnix_utc.json');
+    let data = JSON.parse(rawdata);
+    return res.status(200).json(data);
+});
+
 
 app.listen(PORT, ()=> console.log(`Listening at port number ${PORT}...`))
