@@ -251,8 +251,17 @@
                             }
                             map.addLayer(markers)
                         }
-                        else
+                        else{
+                            map.removeLayer(markers);
+                            markers = L.markerClusterGroup();
+                            for (var i = 0; i < data.length; i++) {
+                            const marker = new L.marker([data[i].latitude, data[i].longitude])
+                                .bindPopup(data[i].eventid)
+                            markers.addLayer(marker);
+                            }
+                            map.addLayer(markers)
                             console.log("selection: reset");
+                        }
                     }
                 },
                 zoomType: 'x'
