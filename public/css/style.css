@@ -1,0 +1,197 @@
+#map {
+    width: 100%;
+    height: 500px;
+}
+.highcharts-figure, .highcharts-data-table table {
+    width: 100%;
+    margin: 10px;
+}
+
+.highcharts-data-table table {
+    font-family: Verdana, sans-serif;
+    border-collapse: collapse;
+    border: 1px solid #EBEBEB;
+    margin: 0px auto;
+    text-align: center;
+    width: 1200px;
+    max-width: 500px;
+}
+
+.highcharts-data-table caption {
+    padding: 1em 0;
+    font-size: 1.2em;
+    color: #555;
+}
+.highcharts-data-table th {
+    font-weight: 600;
+padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+background: #f1f7ff;
+}
+.l1{
+    width: 35px;
+    height: 35px;
+    margin-left: 5px;
+    margin-top: 15px;
+    border-radius: 50%;
+    background-color: rgba(110, 204, 57, 0.4);
+    padding: 10px;
+    vertical-align: middle;
+    display: inline-block;
+}
+.l1 > b{
+    width: 25px;
+    height: 25px;
+    margin-top: -5px;
+    margin-left: -5px;
+    border-radius: 50%;
+    font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    background-color: rgba(110, 204, 57, 0.6);
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    position: absolute;
+}
+.l2{
+    width: 35px;
+    height: 35px;
+    margin-left: 5px;
+    margin-top: 15px;
+    border-radius: 50%;
+    background-color:rgba(240, 194, 12, 0.4);
+    padding: 10px;
+    vertical-align: middle;
+    display: inline-block;
+}
+.l2 > b{
+    width: 25px;
+    height: 25px;
+    margin-top: -5px;
+    margin-left: -5px;
+    border-radius: 50%;
+    font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    background-color:rgba(240, 194, 12, 0.6);
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    position: absolute;
+}
+.l3{
+    width: 35px;
+    height: 35px;
+    margin-left: 5px;
+    margin-top: 15px;
+    border-radius: 50%;
+    background-color:rgba(241, 128, 23, 0.4);
+    padding: 10px;
+    vertical-align: middle;
+    display: inline-block;
+}
+.l3 > b{
+    width: 25px;
+    height: 25px;
+    margin-top: -5px;
+    margin-left: -5px;
+    border-radius: 50%;
+    font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    background-color: rgba(241, 63, 23, 0.6);
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    position: absolute;
+}
+.l4{
+    width: 35px;
+    height: 35px;
+    margin-left: 5px;
+    margin-top: 15px;
+    border-radius: 50%;
+    background-color: rgba(249, 3, 3, 0.4);
+    padding: 10px;
+    vertical-align: middle;
+    display: inline-block;
+}
+.l4 > b{
+    width: 25px;
+    height: 25px;
+    margin-top: -5px;
+    margin-left: -5px;
+    border-radius: 50%;
+    font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    background-color: rgba(249, 3, 3, 1);
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    position: absolute;
+}
+.leaflet-div-icon {
+    background: none;
+    border: none;
+}
+#loader-wrapper{
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    position: fixed;
+    display: inline;
+}
+#loader{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+#loader-info{
+    margin-top: 2rem;
+    margin-left: -100px;
+}
+#spinner {
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+  }
+  
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Add animation to "page content" */
+  .animate-bottom {
+    position: relative;
+    -webkit-animation-name: animatebottom;
+    -webkit-animation-duration: 1s;
+    animation-name: animatebottom;
+    animation-duration: 1s
+  }
+  
+  @-webkit-keyframes animatebottom {
+    from { bottom:-100px; opacity:0 } 
+    to { bottom:0px; opacity:1 }
+  }
+  
+  @keyframes animatebottom { 
+    from{ bottom:-100px; opacity:0 } 
+    to{ bottom:0; opacity:1 }
+  }

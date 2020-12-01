@@ -10,12 +10,23 @@
 
   <title>Global Terrorism Database visualization</title>
 
-  <!-- Bootstrap core CSS -->
-  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
+  
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+  <script src="https://unpkg.com/leaflet-lasso@2.2.3/dist/leaflet-lasso.umd.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/data.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
   <!-- Custom styles for this template -->
   <link href="css/simple-sidebar.css" rel="stylesheet">
-
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
@@ -67,7 +78,18 @@
       </nav>
 
       <div class="container-fluid">
-
+        <div id='map'></div>
+        <figure class="highcharts-figure">
+          <div id="container"></div>
+        </figure>
+        <div id="loader-wrapper">
+          <div id=loader>
+            <div id="spinner"></div>
+            <div id="loader-info">
+              <h3>Data is loading </br>Please wait...</h3>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <!-- /#page-content-wrapper -->
@@ -86,6 +108,246 @@
       $("#wrapper").toggleClass("toggled");
     });
   </script>
+
+<script>
+        
+  let data;
+  const map = L.map('map').setView([0, 0], 2);
+  const clusterGroupOptions = {
+              iconCreateFunction: function(cluster) {
+                  return L.divIcon(clusterStyler(cluster.getChildCount()));
+              }
+          };
+  let markers = L.markerClusterGroup(clusterGroupOptions);
+
+  $( document ).ready(async ()=> {
+      const res = await fetch('/data')
+      data = await res.json()
+      drawSlider()
+      drawMap(data)
+  });
+  function clusterStyler(elements){
+      if(elements > 2000){
+          return { html: '<span class="l4"><b >' + elements + '</b></span>' }
+      }else if(elements > 1000){
+          return { html: '<span class="l3"><b >' + elements + '</b></span>' }
+      }else if(elements > 500){
+          return { html: '<span class="l2"><b >' + elements + '</b></span>' }
+      }else{
+          return { html: '<span class="l1"><b >' + elements + '</b></span>' }
+      }
+  }
+  
+  function drawMap(data){
+      try {
+          const lassoControl = L.control.lasso().addTo(map);
+          const mapLink =
+          '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+          L.tileLayer(
+          'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; ' + mapLink + ' Contributors',
+              maxZoom: 10,
+              minZoom: 2
+          }).addTo(map);
+          
+          for (var i = 0; i < data.length; i++) {
+              const marker = new L.marker([data[i].latitude, data[i].longitude])
+                  .bindPopup(data[i].eventid)
+              markers.addLayer(marker);
+          }
+          map.addLayer(markers);
+  
+          function resetSelectedState() {
+              map.eachLayer(layer => {
+                  if (layer instanceof L.Marker) {
+                  } else if (layer instanceof L.Path) {
+                      layer.setStyle({ color: '#3388ff' });
+                  }
+              });
+
+          }
+
+          function setSelectedLayers(layers) {
+              resetSelectedState();
+              layers.forEach(layer => {
+                  if (layer instanceof L.Marker) {
+                      layer.setIcon(new L.Icon.Default({ className: 'selected '}));
+                  } else if (layer instanceof L.Path) {
+                      layer.setStyle({ color: '#ff4620' });
+                  }
+              });
+              console.log(layers)
+          }
+
+          map.on('mousedown', () => {
+              resetSelectedState();
+          });
+
+          map.on('lasso.finished', event => {
+              setSelectedLayers(event.layers);
+          });
+
+          map.on('lasso.enabled', () => {
+              resetSelectedState();
+          });
+          document.getElementById('loader-wrapper').style.display = 'none';
+      }catch{
+          console.log('Some error occured!')
+      }
+  }
+  
+  function getMonth(month) {
+      let d = new Date().toString().split(" ")
+      d[1] = month
+      d = new Date(d.join(' ')).getMonth()+1
+      if(!isNaN(d)) {
+          if(d<10){
+              return '0'+d
+          }else{
+              return d
+          }
+      }
+      return -1;
+  }
+
+  // date type to YYYYMMDD
+  function dateFilter(min, max){
+      try{
+          let mintxt = new Date(min);
+          let minyear = mintxt.toString().split(" ")[3];
+          let minmonth = getMonth(mintxt.toString().split(" ")[1]);
+          let minday = mintxt.toString().split(" ")[2];
+          let mindate = minyear+minmonth+minday;
+          let maxtxt = new Date(max);
+          let maxyear = maxtxt.toString().split(" ")[3];
+          let maxmonth = getMonth(maxtxt.toString().split(" ")[1]);
+          let maxday = maxtxt.toString().split(" ")[2];
+          let maxdate = maxyear+maxmonth+maxday;
+          let output = mindate+"_"+maxdate;
+          return output;
+      }catch{
+          console.log('Some error occured!');
+      }
+  }
+
+  function dataExtracter(mindate, maxdate, data){
+      let rangedData = data;
+      let filteredData = new Array();
+      try{
+        rangedData.forEach(function(item){
+            let ymd = item.eventid.slice(0,8);
+            if ((parseInt(ymd)>=parseInt(mindate))&&(parseInt(ymd)<=parseInt(maxdate))){
+                filteredData.push(item);
+            }
+        })
+      }catch{
+          console.log('Some error occured!')
+      }
+      return filteredData
+  }
+
+  async function drawSlider(){
+      try {
+          const res = await fetch('/time')
+          const time = await res.json()
+          drawTime(time)
+      }catch{
+          console.log('Some error occured!')
+      }
+  }     
+
+  function drawTime(time) {
+      Highcharts.chart('container', {
+      chart: {
+          events: {
+              selection: function(event) {
+                  if(event.xAxis != null){
+                      let output = dateFilter(event.xAxis[0].min,event.xAxis[0].max);
+                      let startingDate = output.split("_")[0]
+                      let endingDate = output.split("_")[1]
+                      // items : selected cases occured between startingdate ~ endingdate
+                      let items = dataExtracter(startingDate, endingDate, data)
+                      map.removeLayer(markers);
+                      markers = L.markerClusterGroup(clusterGroupOptions);
+                      for (var i = 0; i < items.length; i++) {
+                      const marker = new L.marker([items[i].latitude, items[i].longitude])
+                          .bindPopup(items[i].eventid)
+                      markers.addLayer(marker);
+                      }
+                      map.addLayer(markers)
+                  }
+                  else{
+                      map.removeLayer(markers);
+                      markers = L.markerClusterGroup(clusterGroupOptions);
+                      for (var i = 0; i < data.length; i++) {
+                      const marker = new L.marker([data[i].latitude, data[i].longitude])
+                          .bindPopup(data[i].eventid)
+                      markers.addLayer(marker);
+                      }
+                      map.addLayer(markers)
+                      console.log("selection: reset");
+                  }
+              }
+          },
+          zoomType: 'x'
+      },
+      title: {
+          text: 'Time-Series Slider'
+      },
+      subtitle: {
+          text: document.ontouchstart === undefined ?
+          'Click and drag in the plot area to zoom in.' : 'Pinch the chart to zoom in.'
+      },
+      xAxis: {
+          type: 'datetime'
+      },
+      yAxis: {
+          title: {
+          text: 'Number of Terror Cases'
+          }
+      },
+      legend: {
+          enabled: false
+      },
+      plotOptions: {
+          area: {
+          fillColor: {
+              linearGradient: {
+              x1: 0,
+              y1: 0,
+              x2: 0,
+              y2: 1
+              },
+              stops: [
+              [0, Highcharts.getOptions().colors[0]],
+              [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+              ]
+          },
+          marker: {
+              radius: 2
+          },
+          lineWidth: 1,
+          states: {
+              hover: {
+              lineWidth: 1
+              }
+          },
+          threshold: null
+          }
+      },
+
+      series: [{
+          type: 'area',
+          name: '# of cases',
+          data: time
+      }]
+      });
+  }
+
+</script>
+
+
+
 
 </body>
 
