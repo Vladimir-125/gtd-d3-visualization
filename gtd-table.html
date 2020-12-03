@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.css"/>
+    <link href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+    <link href="https://cdn.datatables.net/buttons/1.6.5/css/buttons.dataTables.min.css">
+    <script src='https://code.jquery.com/jquery-3.5.1.js'></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.5/js/dataTables.buttons.min.js"></script>
+    <script src='https://cdn.datatables.net/buttons/1.6.5/js/buttons.colVis.min.js'></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <title></title>
+</head>
+<body>
+    <form>
+        <input type='button' value='Data Update' onclick='DataUpdate()'>
+    </form>
+
+    <table id="gtd-table" class="table">
+		<thead>
+			<tr id="header-row"></tr>
+		</thead>
+
+    </table>
+    
+    <script>
+        // Read JSON data
+        let json_file = 'data1.json';
+        let read_json = (function(){
+            let json = null;
+            $.ajax({
+                'async': false,
+                'global': false,
+                'url': json_file,
+                'dataType': "json",
+                'success': function(data) {
+                json = data;
+                }
+            });
+            return json;
+        })();
+
+        let json_data = read_json;
+        for(let i=0; i < json_data.length; i++){
+            let eventid = json_data[i]['eventid'];
+            json_data[i]['year'] = eventid.slice(0, 4);
+            json_data[i]['month'] = eventid.slice(4, 6);
+            json_data[i]['day'] = eventid.slice(6, 8);
+            json_data[i]['idx'] = eventid.slice(8, 12);
+        }
+
+        // Some routines
+        // Should read from data.
+        let total_keys = ['eventid', 'year', 'month', 'day', 'idx', 'extended', 'region_txt', 'country_txt', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attacktype1_txt', 'targtype1_txt', 'targsubtype1_txt', 'gname', 'motive', 'weaptype1_txt', 'weapsubtype1_txt', 'weapdetail', 'nkill', 'nwound', 'dbsource', 'ishostkid', 'ransom'];
+
+        // Text to display for each key
+        let rename_keys = d3.scaleOrdinal()
+                            .domain(total_keys)
+                            .range(['event', 'Year', 'Month', 'Day', 'Idx', 'extended', 'region', 'country', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attack type', 'target type', 'targsubtype', 'gname', 'motive', 'weapon type', 'weapon subtype', 'weapon detail', 'kill', 'wound', 'dbsource', 'ishostkid', 'ransom']);
+
+        // Column width of each key
+        let column_widths = d3.scaleOrdinal()
+                            .domain(total_keys)
+                            .range([50, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 100, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]);
+        
+        // Summary of each key                    
+        let summary_keys = d3.scaleOrdinal()
+                            .domain(total_keys)
+                            .range(['YYYYMMDDIIII', 'Occur year', 'Occur month', 'Occur day', 'Case idx', 'extended', 'region of terror', 'country', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attack type', 'target type', 'targsubtype', 'gname', 'motive', 'weapon type', 'weapon subtype', 'weapon detail', 'kill', 'wound', 'dbsource', 'ishostkid', 'ransom']);
+
+        // find dict by some item value from array
+        function findElement(arr, propName, propValue) {
+            for (var i=0; i < arr.length; i++)
+                if (arr[i][propName] == propValue)
+                    return arr[i];
+        }
+
+        // selected event ids(get from map or chart)
+        let select_events = ['197000000001', '197000000002', '197001000001', '197001000002', '197001000003', '197001020001']
+        let select_events2 = ['197000000001', '197000000002', '197001000001'];
+
+
+        function init(){
+            // Initialize
+
+            // Mutable
+            //let select_keys = ['year', 'month', 'day', 'idx', 'country_txt', 'summary', 'attacktype1_txt']
+            let select_keys = total_keys;
+
+            // Load selected events data.
+            let select_data =  [];
+            for (let i=0; i < select_events.length; i++){
+                select_data.push(findElement(json_data, 'eventid', select_events[i]))
+            }
+
+            // Set up for DataTables
+            let columnDef_list = [];
+            for(let i=0; i < select_keys.length; i++){
+                let temp_dict = {};
+                temp_dict['targets'] = i;
+                temp_dict['data'] = select_keys[i];
+                temp_dict['width'] = column_widths(select_keys[i]);
+                //temp_dict['className'] = 'noVis';
+                columnDef_list.push(temp_dict);
+                d3.select('#header-row')
+                    .append('th')
+                    .text(rename_keys(select_keys[i]));
+
+            };
+
+            $(document).ready(function(){
+                let table = $("#gtd-table").DataTable({
+                        data: select_data,
+                        dom: 'Bfrtip',
+                        columnDefs: columnDef_list,
+                        buttons: [
+                            'colvis'
+                        ],
+                        //: [ 10, 20, 30, 40, 50 ],
+                        //displayLength: 10, 
+                        scrollX: true,
+                        scrollY: 500, 
+
+                 });
+
+                // Header hover events
+                // Change hovered headers' color and pop up summary massage of column
+                let headers = table.columns().header().toArray();
+
+                $(headers).on('mouseenter', function () {
+                    //add mouse enter event of header
+                    //alert(summary_keys(select_keys[this.cellIndex]))
+                });
+
+                $(headers).on('mouseleave', function () {
+                    //add mouse leave event of header
+                    //alert(summary_keys(select_keys[this.cellIndex]))
+                });
+
+                $(headers).on('click', function () {
+                    //add mouse click event of header
+                    alert(summary_keys(select_keys[this.cellIndex]))
+                });
+            });
+        
+
+        };
+
+        // Function for update data of table.
+        function DataUpdate(){
+            let table = $("#gtd-table").DataTable();
+            // Load selected events data.
+            let select_data =  [];
+            for (let i=0; i < select_events2.length; i++){
+                select_data.push(findElement(json_data, 'eventid', select_events2[i]))
+            }
+
+            table.clear();
+            table.rows.add(select_data);
+            table.draw();
+        };
+
+        init();
+
+    </script>
+</body>
+</html>
