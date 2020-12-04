@@ -11,6 +11,8 @@
     <script src='https://cdn.datatables.net/buttons/1.6.5/js/buttons.colVis.min.js'></script>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <title></title>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
     <form>
@@ -26,13 +28,12 @@
     
     <script>
         // Read JSON data
-        let json_file = 'data1.json';
         let read_json = (function(){
             let json = null;
             $.ajax({
                 'async': false,
                 'global': false,
-                'url': json_file,
+                'url': '/table-data',
                 'dataType': "json",
                 'success': function(data) {
                 json = data;
@@ -52,7 +53,7 @@
 
         // Some routines
         // Should read from data.
-        let total_keys = ['eventid', 'year', 'month', 'day', 'idx', 'extended', 'region_txt', 'country_txt', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attacktype1_txt', 'targtype1_txt', 'targsubtype1_txt', 'gname', 'motive', 'weaptype1_txt', 'weapsubtype1_txt', 'weapdetail', 'nkill', 'nwound', 'dbsource', 'ishostkid', 'ransom'];
+        const total_keys = ['eventid', 'year', 'month', 'day', 'idx', 'extended', 'region_txt', 'country_txt', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attacktype1_txt', 'targtype1_txt', 'targsubtype1_txt', 'gname', 'motive', 'weaptype1_txt', 'weapsubtype1_txt', 'weapdetail', 'nkill', 'nwound', 'dbsource', 'ishostkid', 'ransom'];
 
         // Text to display for each key
         let rename_keys = d3.scaleOrdinal()
@@ -77,8 +78,9 @@
         }
 
         // selected event ids(get from map or chart)
-        let select_events = ['197000000001', '197000000002', '197001000001', '197001000002', '197001000003', '197001020001']
+        let select_events = ['197000000001', '197000000002', '197001000001', '197001000002', '197001000003', '197001020001', "198202260005","198202270001","198202270002","198202280001","198202280002","198202280003","198202280004","198202280005","198202280006","198202280007","198202280008","198202280009","198202280010","198202280011"]
         let select_events2 = ['197000000001', '197000000002', '197001000001'];
+        
 
 
         function init(){
@@ -101,13 +103,16 @@
                 temp_dict['targets'] = i;
                 temp_dict['data'] = select_keys[i];
                 temp_dict['width'] = column_widths(select_keys[i]);
-                //temp_dict['className'] = 'noVis';
                 columnDef_list.push(temp_dict);
                 d3.select('#header-row')
                     .append('th')
+                    .attr('data-toggle', 'tooltip')
+                    .attr('title', "hELLO")
+                    .attr('data-placement', "top")
                     .text(rename_keys(select_keys[i]));
 
             };
+            $('[data-toggle="tooltip"]').tooltip();
 
             $(document).ready(function(){
                 let table = $("#gtd-table").DataTable({
@@ -126,22 +131,23 @@
 
                 // Header hover events
                 // Change hovered headers' color and pop up summary massage of column
-                let headers = table.columns().header().toArray();
+                // let headers = table.columns().header().toArray();
 
-                $(headers).on('mouseenter', function () {
-                    //add mouse enter event of header
-                    //alert(summary_keys(select_keys[this.cellIndex]))
-                });
+                // $(headers).on('mouseenter', function () {
+                //     //add mouse enter event of header
+                //     // alert(summary_keys(select_keys[this.cellIndex]))
+                // });
 
-                $(headers).on('mouseleave', function () {
-                    //add mouse leave event of header
-                    //alert(summary_keys(select_keys[this.cellIndex]))
-                });
+                // $(headers).on('mouseleave', function () {
+                //     //add mouse leave event of header
+                //     // alert(summary_keys(select_keys[this.cellIndex]))
+                // });
 
-                $(headers).on('click', function () {
-                    //add mouse click event of header
-                    alert(summary_keys(select_keys[this.cellIndex]))
-                });
+                // $(headers).on('click', function () {
+                //     //add mouse click event of header
+                //     alert(summary_keys(select_keys[this.cellIndex]))
+                // });
+                // enable tooltip
             });
         
 
@@ -155,7 +161,7 @@
             for (let i=0; i < select_events2.length; i++){
                 select_data.push(findElement(json_data, 'eventid', select_events2[i]))
             }
-
+            console.log(select_data)
             table.clear();
             table.rows.add(select_data);
             table.draw();

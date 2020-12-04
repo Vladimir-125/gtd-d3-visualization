@@ -1,10 +1,14 @@
 #map {
     width: 100%;
     height: 500px;
+    position: relative;
+
 }
 .highcharts-figure, .highcharts-data-table table {
     width: 100%;
-    margin: 10px;
+    margin-top: 10px;
+    position: relative;
+    float:left;
 }
 
 .highcharts-data-table table {
@@ -13,7 +17,7 @@
     border: 1px solid #EBEBEB;
     margin: 0px auto;
     text-align: center;
-    width: 1200px;
+    width: 100%;
     max-width: 500px;
 }
 
