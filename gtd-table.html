@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.css"/>
-    <!-- <link href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css"> -->
-    <!-- <link href="https://cdn.datatables.net/buttons/1.6.5/css/buttons.dataTables.min.css"> -->
-    <script src='https://code.jquery.com/jquery-3.5.1.js'></script>
-    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
-    <!-- <script src="https://cdn.datatables.net/buttons/1.6.5/js/dataTables.buttons.min.js"></script> -->
-    <script src='https://cdn.datatables.net/buttons/1.6.5/js/buttons.colVis.min.js'></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.5/css/buttons.dataTables.min.css">
+    <script type="text/javascript" src="/media/js/site.js?_=f8b58e9283bed2c11047af0c304e0c6b"></script>
+	<script type="text/javascript" src="/media/js/dynamic.php?comments-page=extensions%2Fbuttons%2Fexamples%2Fcolumn_visibility%2FcolumnsToggle.html" async></script>
+	<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.5/js/dataTables.buttons.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.5/js/buttons.colVis.min.js"></script>
     <script src="https://d3js.org/d3.v6.min.js"></script>
-    <!-- <title></title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
+    <title></title>
 </head>
 <body>
     <form>
@@ -28,12 +28,13 @@
     
     <script>
         // Read JSON data
+        let json_file = 'data1.json';
         let read_json = (function(){
             let json = null;
             $.ajax({
                 'async': false,
                 'global': false,
-                'url': '/table-data',
+                'url': json_file,
                 'dataType': "json",
                 'success': function(data) {
                 json = data;
@@ -53,22 +54,50 @@
 
         // Some routines
         // Should read from data.
-        const total_keys = ['eventid', 'year', 'month', 'day', 'idx', 'extended', 'region_txt', 'country_txt', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attacktype1_txt', 'targtype1_txt', 'targsubtype1_txt', 'gname', 'motive', 'weaptype1_txt', 'weapsubtype1_txt', 'weapdetail', 'nkill', 'nwound', 'dbsource', 'ishostkid', 'ransom'];
+        let total_keys = ['eventid', 'year', 'month', 'day', 'idx', 'extended', 'region', 'country', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attacktype1', 'targtype1', 'targsubtype1', 'gname', 'motive', 'weaptype1', 'weapsubtype1', 'weapdetail', 'nkill', 'nwound', 'dbsource', 'ishostkid', 'ransom'];
 
         // Text to display for each key
         let rename_keys = d3.scaleOrdinal()
                             .domain(total_keys)
-                            .range(['event', 'Year', 'Month', 'Day', 'Idx', 'extended', 'region', 'country', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attack type', 'target type', 'targsubtype', 'gname', 'motive', 'weapon type', 'weapon subtype', 'weapon detail', 'kill', 'wound', 'dbsource', 'ishostkid', 'ransom']);
+                            .range(['Event', 'Year', 'Month', 'Day', 'Idx', 'Extended', 'Region', 'Country', 'City', 'Provstate', 'Latitude', 'Longitude', 'Summary', 'Multiple', 'Success', 'Suicide', 'Attack Type', 'Target Type', 'Target Subtype', 'Terror Group', 'Motive', 'Weapon Type', 'Weapon Subtype', 'Weapon Detail', 'Kill', 'Wound', 'DB Source', 'Hostage Kid', 'Ransom']);
 
         // Column width of each key
         let column_widths = d3.scaleOrdinal()
                             .domain(total_keys)
                             .range([50, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 100, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]);
+
+        // Text to display for each key
+        let default_visibility = d3.scaleOrdinal()
+                            .domain(total_keys)
+                            .range([false, true, true, true, false, false, false, true, true, true, false, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]);
         
         // Summary of each key                    
         let summary_keys = d3.scaleOrdinal()
                             .domain(total_keys)
-                            .range(['YYYYMMDDIIII', 'Occur year', 'Occur month', 'Occur day', 'Case idx', 'extended', 'region of terror', 'country', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attack type', 'target type', 'targsubtype', 'gname', 'motive', 'weapon type', 'weapon subtype', 'weapon detail', 'kill', 'wound', 'dbsource', 'ishostkid', 'ransom']);
+                            .range(['A 12-digit Event ID system. First 8 numbers – date recorded “yyyymmdd”. Last 4 numbers – sequential',
+                                    'This field contains the year in which the incident occurred.',
+                                    'This field contains the number of the month in which the incident occurred.',
+                                    'This field contains the numeric day of the month on which the incident occurred.',
+                                    'Case idx',
+                                    '1 = "Yes" The duration of an incident extended more than 24 hours. 0 = "No" The duration of an incident extended less',
+                                    'This field identifies the region in which the incident occurred.',
+                                    'This field identifies the country or location where the incident occurred.',
+                                    'city', 'Name (at the time of event) of the 1st order subnational administrative region',
+                                    'The latitude of the city in which the event occurred.',
+                                    'The longitude of the city in which the event occurred.',
+                                    'summary',
+                                    'multiple',
+                                    'Success of a terrorist strike',
+                                    '1 = "Yes" The incident was a suicide attack. 0 = "No" There is no indication that the incident was a suicide',
+                                    'The general method of attack and broad class of tactics used.',
+                                    'The general type of target/victim',
+                                    'The more specific target category',
+                                    'The name of the group that carried out the attack',
+                                    'motive', 'General type of weapon used in the incident',
+                                    'More specific value for most of the Weapon Types',
+                                    'weapon detail',
+                                    'The number of total confirmed fatalities for the incident',
+                                    'wound', 'dbsource', 'ishostkid', 'ransom']);
 
         // find dict by some item value from array
         function findElement(arr, propName, propValue) {
@@ -78,16 +107,14 @@
         }
 
         // selected event ids(get from map or chart)
-        let select_events = ['197000000001', '197000000002', '197001000001', '197001000002', '197001000003', '197001020001', "198202260005","198202270001","198202270002","198202280001","198202280002","198202280003","198202280004","198202280005","198202280006","198202280007","198202280008","198202280009","198202280010","198202280011"]
+        let select_events = ['197000000001', '197000000002', '197001000001', '197001000002', '197001000003', '197001020001']
         let select_events2 = ['197000000001', '197000000002', '197001000001'];
-        
 
 
         function init(){
             // Initialize
 
             // Mutable
-            //let select_keys = ['year', 'month', 'day', 'idx', 'country_txt', 'summary', 'attacktype1_txt']
             let select_keys = total_keys;
 
             // Load selected events data.
@@ -103,23 +130,21 @@
                 temp_dict['targets'] = i;
                 temp_dict['data'] = select_keys[i];
                 temp_dict['width'] = column_widths(select_keys[i]);
+                temp_dict['visible'] = default_visibility(select_keys[i]);
                 columnDef_list.push(temp_dict);
                 d3.select('#header-row')
                     .append('th')
-                    // .attr('data-toggle', 'tooltip')
-                    // .attr('title', "hELLO")
                     .text(rename_keys(select_keys[i]));
 
             };
-            // $('[data-toggle="tooltip"]').tooltip();
-           
+
             $(document).ready(function(){
                 let table = $("#gtd-table").DataTable({
                         data: select_data,
                         dom: 'Bfrti',
                         columnDefs: columnDef_list,
                         buttons: [
-                            'colvis'
+                            'columnsToggle',
                         ],
                         //: [ 10, 20, 30, 40, 50 ],
                         //displayLength: 10, 
@@ -140,23 +165,22 @@
                 } );
                 // Header hover events
                 // Change hovered headers' color and pop up summary massage of column
-                // let headers = table.columns().header().toArray();
+                let headers = table.columns().header().toArray();
 
-                // $(headers).on('mouseenter', function () {
-                //     //add mouse enter event of header
-                //     // alert(summary_keys(select_keys[this.cellIndex]))
-                // });
+                $(headers).on('mouseenter', function () {
+                    //add mouse enter event of header
+                    //alert(summary_keys(select_keys[this.cellIndex]))
+                });
 
-                // $(headers).on('mouseleave', function () {
-                //     //add mouse leave event of header
-                //     // alert(summary_keys(select_keys[this.cellIndex]))
-                // });
+                $(headers).on('mouseleave', function () {
+                    //add mouse leave event of header
+                    //alert(summary_keys(select_keys[this.cellIndex]))
+                });
 
-                // $(headers).on('click', function () {
-                //     //add mouse click event of header
-                //     alert(summary_keys(select_keys[this.cellIndex]))
-                // });
-                // enable tooltip
+                $(headers).on('click', function () {
+                    //add mouse click event of header
+                    alert(summary_keys(select_keys[this.cellIndex]))
+                });
             });
         
 

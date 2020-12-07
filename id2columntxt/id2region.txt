@@ -1,0 +1,2 @@
+[ '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+[ 'North America', 'Central America & Caribbean', 'South America', 'East Asia', 'Southeast Asia', 'South Asia', 'Central Asia', 'Western Europe', 'Eastern Europe', 'Middle East & North Africa', 'Sub-Saharan Africa', 'Australasia & Oceania']
