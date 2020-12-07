@@ -199,3 +199,14 @@ background: #f1f7ff;
     from{ bottom:-100px; opacity:0 } 
     to{ bottom:0; opacity:1 }
   }
+
+  .highlight{
+    background-color:#318CE7;
+    }
+.dataTables_scrollBody table {
+    margin-left:0px;
+}
+.table-striped > tbody > tr.highlight > td,
+.table-striped > tbody > tr.highlight > th {
+background-color: #318CE7;; /* change #A9D0F5 by the color of your preference */
+}

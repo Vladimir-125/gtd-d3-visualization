@@ -37,6 +37,7 @@ app.get('/data', (req, res)=>{
     // let rawdata = fs.readFileSync('data.json');
     // let data = JSON.parse(rawdata);
     // return res.status(200).json(data);
+    // return res.sendFile(__dirname + '/data-chunck.json')
     return res.sendFile(__dirname + '/data.json')
 
 });

@@ -10,20 +10,33 @@
 
   <title>Global Terrorism Database visualization</title>
 
-  
+  <!-- Leaflet map -->
   <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
   <script src="https://unpkg.com/leaflet-lasso@2.2.3/dist/leaflet-lasso.umd.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   
+  <!-- Highcharts -->
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/modules/data.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="https://code.highcharts.com/modules/export-data.js"></script>
   <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.css"/>
+  <link href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+  <script src='https://code.jquery.com/jquery-3.5.1.js'></script>
+  <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+  <script src='https://cdn.datatables.net/buttons/1.6.5/js/buttons.colVis.min.js'></script>
+  <!-- D3 -->
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  
+
   <!-- Custom styles for this template -->
   <link href="css/simple-sidebar.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
@@ -80,7 +93,7 @@
       <div class="container-fluid">
           <div class="row">
               <div class="col-xs-12 col-md-6">
-                  <div class="container">
+                  <div class="container-fluid">
                       <div class="row">
                            <div id='map'></div>
                       </div>
@@ -92,12 +105,19 @@
                   </div>
               </div>
               <div class="col-xs-12 col-md-6">
-                <div class="container">
+                <div class="container-fluid">
                     <div class="row">
-
+                        <div class="col-12">
+                            <table id="gtd-table" class="table table-striped table-bordered" width="100%" style="table-layout:fixed;">
+                                <thead>
+                                    <tr id="header-row"></tr>
+                                </thead>
+                            </table>
+                        </div>
+                        
                     </div>
                     <div class="row">
-                        
+
                     </div>
                 </div>
               </div>
@@ -118,8 +138,8 @@
   <!-- /#wrapper -->
 
   <!-- Bootstrap core JavaScript -->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- <script src="vendor/jquery/jquery.min.js"></script> -->
+  <!-- <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script> -->
 
   <!-- Menu Toggle Script -->
   <script>
@@ -132,6 +152,10 @@
 <script>
         
   let data;
+  let json_data;
+  let ctrlDown = false;
+    const ctrlKey = 17,
+        cmdKey = 91;
   const map = L.map('map').setView([0, 0], 2);
   const clusterGroupOptions = {
               iconCreateFunction: function(cluster) {
@@ -141,17 +165,38 @@
   let markers = L.markerClusterGroup(clusterGroupOptions);
 
   $( document ).ready(async ()=> {
-      const res = await fetch('/data')
+    // load map data  
+    const res = await fetch('/data')
       data = await res.json()
-      drawSlider()
+      // load table data
+      const res2 = await fetch('/table-data')
+      json_data = await res2.json()
+      for(let i=0; i < json_data.length; i++){
+            let eventid = json_data[i]['eventid'];
+            json_data[i]['year'] = eventid.slice(0, 4);
+            json_data[i]['month'] = eventid.slice(4, 6);
+            json_data[i]['day'] = eventid.slice(6, 8);
+            json_data[i]['idx'] = eventid.slice(8, 12);
+        }
+    //   drawSlider()
       drawMap(data)
+    //   initTable()
+    $(document).keydown(function(e) {
+        if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = true;
+    }).keyup(function(e) {
+        if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = false;
+    });
+    // $(document).keydown(function(e) {
+    //     if (ctrlDown) console.log("Document catch Ctrl");
+        
+    // }); 
   });
   function clusterStyler(elements){
-      if(elements > 2000){
+      if(elements > 10000){
           return { html: '<span class="l4"><b >' + elements + '</b></span>' }
       }else if(elements > 1000){
           return { html: '<span class="l3"><b >' + elements + '</b></span>' }
-      }else if(elements > 500){
+      }else if(elements > 100){
           return { html: '<span class="l2"><b >' + elements + '</b></span>' }
       }else{
           return { html: '<span class="l1"><b >' + elements + '</b></span>' }
@@ -196,13 +241,16 @@
                       layer.setStyle({ color: '#ff4620' });
                   }
               });
-              console.log(layers)
+              const events = layers.map(e=>e._popup._content)
+              drawTable(events)
           }
 
           map.on('mousedown', () => {
               resetSelectedState();
           });
-
+        //   map.on('mouseup', event => {
+        //       setSelectedLayers(event.layers);
+        //   });
           map.on('lasso.finished', event => {
               setSelectedLayers(event.layers);
           });
@@ -366,8 +414,140 @@
 
 </script>
 
+<script>
+    // table
+    // Some routines
+    // Should read from data.
+    const total_keys = ['eventid', 'year', 'month', 'day', 'idx', 'extended', 'region_txt', 'country_txt', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attacktype1_txt', 'targtype1_txt', 'targsubtype1_txt', 'gname', 'motive', 'weaptype1_txt', 'weapsubtype1_txt', 'weapdetail', 'nkill', 'nwound', 'dbsource', 'ishostkid', 'ransom'];
 
+    // Text to display for each key
+    let rename_keys = d3.scaleOrdinal()
+                        .domain(total_keys)
+                        .range(['event', 'Year', 'Month', 'Day', 'Idx', 'extended', 'region', 'country', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attack type', 'target type', 'targsubtype', 'gname', 'motive', 'weapon type', 'weapon subtype', 'weapon detail', 'kill', 'wound', 'dbsource', 'ishostkid', 'ransom']);
 
+    // Column width of each key
+    // let column_widths = d3.scaleOrdinal()
+    //                     .domain(total_keys)
+    //                     .range([50, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 100, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]);
+    const column_widths = [50, 10, 10, 10, 10, 10, 50, 50, 50, 50, 50, 50, 200, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50];
+    // Summary of each key                    
+    let summary_keys = d3.scaleOrdinal()
+                        .domain(total_keys)
+                        .range(['YYYYMMDDIIII', 'Occur year', 'Occur month', 'Occur day', 'Case idx', 'extended', 'region of terror', 'country', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attack type', 'target type', 'targsubtype', 'gname', 'motive', 'weapon type', 'weapon subtype', 'weapon detail', 'kill', 'wound', 'dbsource', 'ishostkid', 'ransom']);
+
+    // find dict by some item value from array
+    function findElement(arr, propName, propValue) {
+        for (var i=0; i < arr.length; i++)
+            if (arr[i][propName] == propValue)
+                return arr[i];
+    }
+    let columnSelector = []
+    let isFirstTime = true
+    function drawTable(select_events){
+        // Initialize
+            columnSelector = total_keys.map(e=>false)
+
+            // Mutable
+            let select_keys = total_keys;
+
+            // Load selected events data.
+            let select_data =  [];
+            for (let i=0; i < select_events.length; i++){
+                select_data.push(findElement(json_data, 'eventid', select_events[i]))
+            }
+            if(isFirstTime){
+                // Set up for DataTables
+                let columnDef_list = [];
+                for(let i=0; i < select_keys.length; i++){
+                    let temp_dict = {};
+                    temp_dict['targets'] = i;
+                    temp_dict['data'] = select_keys[i];
+                    temp_dict['width'] = column_widths[i] + 'px';
+                    columnDef_list.push(temp_dict);
+                    d3.select('#header-row')
+                        .append('th')
+                        .style('width', `${column_widths[i]}px !important`)
+                        .attr('class', `text-center`)
+                        .text(rename_keys(select_keys[i]));
+                };
+            
+                let table = $("#gtd-table").DataTable({
+                        data: select_data,
+                        dom: 'Bfrti',
+                        columns: columnDef_list,
+                        buttons: [
+                            'colvis'
+                        ],
+                        scrollX: true,
+                        scrollY: 350, 
+                        "scrollCollapse": true,
+                        "paging":         false
+                    });
+                $('#gtd-table tbody')
+                .on( 'mouseenter', 'td', function () {
+                    var colIdx = table.cell(this).index().column;
+                    // $( table.cells().nodes() ).removeClass( 'highlight' );
+                    // highlight if not selected
+                    if(!columnSelector[colIdx]){
+                        $(table.column(colIdx).nodes()).addClass('highlight');
+                    }
+                    if(ctrlDown){
+                        var rowIdx = table.row(this).index();
+                        $(table.row(rowIdx).nodes()).addClass('highlight');
+                    }
+                });
+                $('#gtd-table tbody')
+                .on( 'mouseleave', 'td', function () {
+                    var rowIdx = table.row(this).index();
+                    $( table.row(rowIdx).nodes()).removeClass('highlight');
+                
+                    // highlight if not selected
+                    var colIdx = table.cell(this).index().column;
+                    if(!columnSelector[colIdx]){
+                        $( table.column( colIdx ).nodes() ).removeClass( 'highlight' );
+                    }
+                });
+    
+                $('#gtd-table tbody').on( 'click', 'td', function () {
+                    var colIdx = table.cell(this).index().column;
+                    // list of selected columns
+                    if(ctrlDown){
+                        var eventId = table.row(this).index();
+                        const selectedEventId = table.cell({ row: eventId, column: 0 }).data();
+                        console.log('selectedEventId:', selectedEventId)
+                    }else{
+                        // select row only when ctrl is not pressed
+                        columnSelector[colIdx] = !columnSelector[colIdx];
+                    }
+                    const listOfColumns = getColumnSelections(columnSelector, total_keys);
+                    console.log('listOfColumns:', listOfColumns)
+                });
+
+                isFirstTime = false;
+            }else{
+                let table = $("#gtd-table").DataTable();
+                // Load selected events data.
+                let select_data =  [];
+                for (let i=0; i < select_events.length; i++){
+                    select_data.push(findElement(json_data, 'eventid', select_events[i]))
+                }
+                table.clear();
+                table.rows.add(select_data);
+                table.draw();
+            }
+        };
+       function getColumnSelections(selections, total_keys){
+           if(selections.legend!== total_keys.legend) return null;
+           const listOfCols = []
+           selections.forEach((e, i)=>{
+               if(e){
+                    listOfCols.push(total_keys[i])
+               } 
+           })
+           return listOfCols;
+       }
+   
+</script>
 
 </body>
 

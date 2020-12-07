@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.css"/>
-    <link href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
-    <link href="https://cdn.datatables.net/buttons/1.6.5/css/buttons.dataTables.min.css">
+    <!-- <link href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css"> -->
+    <!-- <link href="https://cdn.datatables.net/buttons/1.6.5/css/buttons.dataTables.min.css"> -->
     <script src='https://code.jquery.com/jquery-3.5.1.js'></script>
     <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.5/js/dataTables.buttons.min.js"></script>
+    <!-- <script src="https://cdn.datatables.net/buttons/1.6.5/js/dataTables.buttons.min.js"></script> -->
     <script src='https://cdn.datatables.net/buttons/1.6.5/js/buttons.colVis.min.js'></script>
     <script src="https://d3js.org/d3.v6.min.js"></script>
-    <title></title>
-
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- <title></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
 </head>
 <body>
     <form>
         <input type='button' value='Data Update' onclick='DataUpdate()'>
     </form>
 
-    <table id="gtd-table" class="table">
+    <table id="gtd-table" class="table table-striped table-bordered" >
 		<thead>
 			<tr id="header-row"></tr>
 		</thead>
@@ -106,18 +106,17 @@
                 columnDef_list.push(temp_dict);
                 d3.select('#header-row')
                     .append('th')
-                    .attr('data-toggle', 'tooltip')
-                    .attr('title', "hELLO")
-                    .attr('data-placement', "top")
+                    // .attr('data-toggle', 'tooltip')
+                    // .attr('title', "hELLO")
                     .text(rename_keys(select_keys[i]));
 
             };
-            $('[data-toggle="tooltip"]').tooltip();
-
+            // $('[data-toggle="tooltip"]').tooltip();
+           
             $(document).ready(function(){
                 let table = $("#gtd-table").DataTable({
                         data: select_data,
-                        dom: 'Bfrtip',
+                        dom: 'Bfrti',
                         columnDefs: columnDef_list,
                         buttons: [
                             'colvis'
@@ -128,7 +127,17 @@
                         scrollY: 500, 
 
                  });
-
+                $('#gtd-table tbody')
+                .on( 'mouseenter', 'td', function () {
+                    var colIdx = table.cell(this).index().column;
+                    $( table.cells().nodes() ).removeClass( 'highlight' );
+                    $( table.column( colIdx ).nodes() ).addClass( 'highlight' );
+                } );
+                $('#gtd-table tbody')
+                .on( 'mouseleave', 'td', function () {
+                    var colIdx = table.cell(this).index().column;
+                    $( table.cells().nodes() ).removeClass( 'highlight' );
+                } );
                 // Header hover events
                 // Change hovered headers' color and pop up summary massage of column
                 // let headers = table.columns().header().toArray();
@@ -161,7 +170,6 @@
             for (let i=0; i < select_events2.length; i++){
                 select_data.push(findElement(json_data, 'eventid', select_events2[i]))
             }
-            console.log(select_data)
             table.clear();
             table.rows.add(select_data);
             table.draw();
@@ -170,5 +178,10 @@
         init();
 
     </script>
+    <style>
+        .highlight{
+            background-color:#318CE7;
+        }
+    </style>
 </body>
 </html>
