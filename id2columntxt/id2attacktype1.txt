@@ -1,0 +1,2 @@
+[ '1', '2', '3', '4', '5', '6', '7', '8', '9']
+[ 'Assassination', 'Armed Assault', 'Bombing/Explosion', 'Hijacking', 'Hostage Taking (Barricade Incident)', 'Hostage Taking (Kidnapping)', 'Facility/Infrastructure Attack', 'Unarmed Assault', 'Unknown']

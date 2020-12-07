@@ -1,0 +1,2 @@
+[ '1', '2', '3', '5', '6', '7', '8', '9', '10', '11', '12', '13']
+[ 'Biological', 'Chemical', 'Radiological', 'Firearms', 'Explosives', 'Fake Weapons', 'Incendiary', 'Melee', 'Vehicle (not to include vehicle-borne explosives, i.e., car or truck bombs)', 'Sabotage Equipment', 'Other', 'Unknown']
