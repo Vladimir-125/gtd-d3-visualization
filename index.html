@@ -719,15 +719,11 @@
 
 
     const datapage = d3.json("./raw_data/data1.json").then(function(origin){
-        console.log(origin)
         const selectedColumn = getColumn(true)
         const selectedEvent = getEvent(true)
-        console.log(selectedColumn)
-        console.log(selectedEvent)
 
         const selection = dataSelector(selectedColumn, selectedEvent,origin);
         const nCol = selectedColumn.length
-        console.log(selection)
 
         const graphArea = svgGraph.append("g").attr("id","graphArea").attr('transform', translate(40, 20))
 
@@ -748,16 +744,10 @@
 
 
         const axis = setupAxis(selectedColumn,selection,graph_width,graph_height)
-        console.log(axis)
         d3.select("g#xArea").call(axis.xAxis)
         d3.select("g#yArea").call(axis.yAxis)
 
 
-        selection.forEach(function(elem){
-            console.log(elem[selectedColumn[0]])
-            console.log(axis.xScale(elem[selectedColumn[0]]))
-            console.log(axis.yScale(axis.yData[selectedColumn[0]]))
-        })
 
         let draw = d3.select("g#barArea")
         //console.log(draw)
@@ -779,9 +769,6 @@
 
             let col0Type=colType(selectedColumn[0])
             let col1Type=colType(selectedColumn[1])
-
-            console.log(col0Type)
-            console.log(col1Type)
 
             if(col0Type=="str"){
                 if(col1Type=="int"){
@@ -838,14 +825,6 @@
                     .attr('height',d=>{return graph_height-axis.yScale(d.count)})
             });
     })
-    datapage.then(function(origin){
-        const selectedColumn = getColumn(true)
-        const selectedEvent = getEvent(true)
-
-
-    })
-
-
 
 
 
