@@ -40,6 +40,7 @@
   <!-- Custom styles for this template -->
   <link href="css/simple-sidebar.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <script src="gtdGraph.js"></script>
 </head>
 
 <body>
@@ -118,7 +119,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12" id="sumGraphDiv" style="display:inline-block;">
-                            <select id="columnSelect">
+                            <!-- <select id="columnSelect">
                                 <option value="attacktype1_txt">attacktype1_txt</option>
                                 <option value="city">city</option>
                                 <option value="country_txt">country_txt</option>
@@ -130,7 +131,7 @@
                                 <option value="weapdetail">weapdetail</option>
                                 <option value="weapsubtype1_txt">weapsubtype1_txt</option>
                                 <option value="weaptype1_txt"></option>
-                            </select>
+                            </select> -->
 
                         </div>
                     </div>
@@ -535,6 +536,7 @@
                     }
                     const listOfColumns = getColumnSelections(columnSelector, total_keys);
                     console.log('listOfColumns:', listOfColumns)
+                    drawGraph(select_data, listOfColumns)
                 });
 
                 isFirstTime = false;
@@ -562,7 +564,7 @@
        }
    
 </script>
-<script>
+<!-- <script>
     //initial screen setting (fixed)
     const border = d3.select("div#sumGraphDiv")//.attr("position","relative")
 
@@ -829,7 +831,7 @@
 
 
 
-</script>
+</script> -->
 </body>
 
 </html>

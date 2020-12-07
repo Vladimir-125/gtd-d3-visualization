@@ -1,4 +1,4 @@
-function drawGraph(select_data,listOfColums) {
+function drawGraph(select_data,listOfColumns) {
     function dataCounter(xData, selector){
         let ret = {}
         let max = 0
@@ -95,8 +95,10 @@ function drawGraph(select_data,listOfColums) {
     function translate(x,y){return `translate(${x}, ${y})`}
 
     const border = d3.select("div#sumGraphDiv")//.attr("position","relative")
-    const svgHeight = 560
-    const svgWidth = 1800
+    const svgHeight = 500 //560
+    const svgWidth = document.getElementById("sumGraphDiv").offsetWidth //1800
+    console.log('svgHeight',svgHeight)
+    console.log('svgWidth', svgWidth)
     const svgScreen = border.append("svg").attr("id","screen").attr("width",svgWidth).attr("height", svgHeight);
     const svgGraph = svgScreen.append("svg").attr("id","columnGraph").attr("width",svgWidth).attr("height", svgHeight)
 
@@ -104,7 +106,6 @@ function drawGraph(select_data,listOfColums) {
 
     const selectedColumn = listOfColumns
     const selectedObjs = select_data
-
     const selection = dataSelector(selectedColumn,selectedObjs);
     const nCol = selectedColumn.length
 
