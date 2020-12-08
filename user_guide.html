@@ -6,8 +6,6 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-
 <style>
 body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
@@ -25,7 +23,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 <!-- First Grid -->
 <div class="w3-row-padding w3-padding-64 w3-container">
   <div class="w3-content">
-    <div class="w3-twothird">
+    <div class="w3-third">
       <h1>Time-Series Slider</h1>
       <h5 class="w3-padding-0">The Time-series slider shows the number of cases by time. The number of cases is encoded with the height of the graph.</h5>
 
@@ -33,9 +31,9 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
         By brushing on the Time-series slider, you can zoom in to a specific time-term. if you want to back initial state, just click 'Reset zoom' button in the upper right corner of the map. The World map shows cases that belong to the selected time-term.</p>
     </div>
 
-    <div class="w3-third w3-center">
+    <div class="w3-twothird">
       <!-- <i class="fa fa-anchor w3-padding-64 w3-text-red"></i> -->
-      <img src='/images/time-series-brush.png'  style="width:320px; height: 200px;" alt='Slider Image'>
+      <img src='time-series-brush.png', alt='Slider Image'>
     </div>
   </div>
 </div>
@@ -43,12 +41,12 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 <!-- Second Grid -->
 <div class="w3-row-padding w3-light-grey w3-padding-64 w3-container">
   <div class="w3-content">
-    <div class="w3-third w3-center">
+    <div class="w3-twothird">
       <!-- <i class="fa fa-coffee w3-padding-64 w3-text-red w3-margin-right"></i> -->
-      <img src='/images/lasso.png' style="width:320px; height: 260px;" alt='Lasso Image'>
+      <img src='lasso.png', alt='Lasso Image'>
     </div>
 
-    <div class="w3-twothird">
+    <div class="w3-third">
       <h1>World Map</h1>
       <h5 class="w3-padding-0">World map shows the number of cases by region.
         The region is encoded with a location on the map. And the number of cases in that region is encoded with the color and size of each circle.</h5>
@@ -87,7 +85,14 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 
 <script>
 // Used to toggle the menu on small screens when clicking on the menu button
-
+function myFunction() {
+  var x = document.getElementById("navDemo");
+  if (x.className.indexOf("w3-show") == -1) {
+    x.className += " w3-show";
+  } else { 
+    x.className = x.className.replace(" w3-show", "");
+  }
+}
 </script>
 
 </body>
