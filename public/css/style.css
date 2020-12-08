@@ -40,101 +40,22 @@ background: #f8f8f8;
 background: #f1f7ff;
 }
 .l1{
-    width: 35px;
-    height: 35px;
-    margin-left: 5px;
-    margin-top: 15px;
     border-radius: 50%;
-    background-color: rgba(110, 204, 57, 0.4);
-    padding: 10px;
     vertical-align: middle;
     display: inline-block;
+    position: relative;
 }
-.l1 > b{
-    width: 25px;
-    height: 25px;
-    margin-top: -5px;
-    margin-left: -5px;
+.inner{
     border-radius: 50%;
+}
+.innerText{
     font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
-    background-color: rgba(110, 204, 57, 0.6);
-    padding: 10px;
-    text-align: center;
-    vertical-align: middle;
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
-.l2{
-    width: 35px;
-    height: 35px;
-    margin-left: 5px;
-    margin-top: 15px;
-    border-radius: 50%;
-    background-color:rgba(240, 194, 12, 0.4);
-    padding: 10px;
-    vertical-align: middle;
-    display: inline-block;
-}
-.l2 > b{
-    width: 25px;
-    height: 25px;
-    margin-top: -5px;
-    margin-left: -5px;
-    border-radius: 50%;
-    font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
-    background-color:rgba(240, 194, 12, 0.6);
-    padding: 10px;
-    text-align: center;
-    vertical-align: middle;
-    position: absolute;
-}
-.l3{
-    width: 35px;
-    height: 35px;
-    margin-left: 5px;
-    margin-top: 15px;
-    border-radius: 50%;
-    background-color:rgba(241, 128, 23, 0.4);
-    padding: 10px;
-    vertical-align: middle;
-    display: inline-block;
-}
-.l3 > b{
-    width: 25px;
-    height: 25px;
-    margin-top: -5px;
-    margin-left: -5px;
-    border-radius: 50%;
-    font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
-    background-color: rgba(241, 63, 23, 0.6);
-    padding: 10px;
-    text-align: center;
-    vertical-align: middle;
-    position: absolute;
-}
-.l4{
-    width: 35px;
-    height: 35px;
-    margin-left: 5px;
-    margin-top: 15px;
-    border-radius: 50%;
-    background-color: rgba(249, 3, 3, 0.4);
-    padding: 10px;
-    vertical-align: middle;
-    display: inline-block;
-}
-.l4 > b{
-    width: 25px;
-    height: 25px;
-    margin-top: -5px;
-    margin-left: -5px;
-    border-radius: 50%;
-    font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
-    background-color: rgba(249, 3, 3, 1);
-    padding: 10px;
-    text-align: center;
-    vertical-align: middle;
-    position: absolute;
-}
+
 .leaflet-div-icon {
     background: none;
     border: none;

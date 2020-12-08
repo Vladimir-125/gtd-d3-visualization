@@ -186,12 +186,8 @@
         const res = await fetch('/data')
         data = await res.json()
         // load table data
-        console.log('Start')
         const res2 = await fetch('/table-data')
-        console.log('End1')
         json_data = await res2.json()
-        // json_data = JSON.parse(await res2.text())
-        console.log('End2')
         processJson(json_data)
         drawSlider()
         drawMap(data)
@@ -200,21 +196,24 @@
     }).keyup(function(e) {
         if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = false;
     });
-    // $(document).keydown(function(e) {
-    //     if (ctrlDown) console.log("Document catch Ctrl");
-        
-    // }); 
   });
   function clusterStyler(elements){
-      if(elements > 10000){
-          return { html: '<span class="l4"><b >' + elements + '</b></span>' }
-      }else if(elements > 1000){
-          return { html: '<span class="l3"><b >' + elements + '</b></span>' }
-      }else if(elements > 100){
-          return { html: '<span class="l2"><b >' + elements + '</b></span>' }
-      }else{
-          return { html: '<span class="l1"><b >' + elements + '</b></span>' }
-      }
+      const maxSize = 5000
+      if(elements > maxSize){
+          const width = 70;
+          const height = 70;
+          let shadowColor = d3.interpolatePuRd(1-0.2)
+            shadowColor = shadowColor.slice(0, shadowColor.length-1) + ', 0.5)'
+          return { html: `<span class="l1" style="background-color:${shadowColor}; width:${width}px; height:${height}px;"><div class="inner" style="background-color:${d3.interpolatePuRd(1-0.2)}; width:${width-10}px; height:${height-10}px; margin: 5px 0px 0px 5px"><b class="innerText">${elements}</b></div></span>` }
+        }else{
+            const minPointSize = 35;
+            const width = Math.max(minPointSize, minPointSize * (1 + (elements/1000)/(maxSize/1000)));
+            const height = Math.max(minPointSize, minPointSize * (1 + (elements/1000)/(maxSize/1000)));
+            let color = Math.min(0.2 + (elements/1000)/(maxSize/1000), 0.8);
+            let shadowColor = d3.interpolatePuRd(color)
+            shadowColor = shadowColor.slice(0, shadowColor.length-1) + ', 0.5)'
+            return { html: `<span class="l1" style="background-color:${shadowColor}; width:${width}px; height:${height}px;"><div class="inner" style="background-color:${d3.interpolatePuRd(color)}; width:${width-10}px; height:${height-10}px; margin: 5px 0px 0px 5px"><b class="innerText">${elements}</b></div></span>` }
+        }
   }
   
   function drawMap(data){
