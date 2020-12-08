@@ -6,13 +6,33 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <link href="css/simple-sidebar.css" rel="stylesheet">
 <style>
 body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
 .fa-anchor,.fa-coffee {font-size:200px}
 </style>
 <body>
-
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
+    <a class="navbar-brand" href="/">Global Terrorism</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mt-2 mt-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/guide">Guide <span class="sr-only">(current)</span></a>
+        </li>
+      </ul>
+    </div>
+  </nav>
 <!-- Header -->
 <header class="w3-container w3-red w3-center" style="padding:128px 16px">
   <h1 class="w3-margin w3-jumbo">TERRORVIS</h1>
@@ -33,7 +53,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 
     <div class="w3-twothird">
       <!-- <i class="fa fa-anchor w3-padding-64 w3-text-red"></i> -->
-      <img src='time-series-brush.png', alt='Slider Image'>
+      <img src='/images/time-series-brush.png', alt='Slider Image'>
     </div>
   </div>
 </div>
@@ -43,7 +63,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
   <div class="w3-content">
     <div class="w3-twothird">
       <!-- <i class="fa fa-coffee w3-padding-64 w3-text-red w3-margin-right"></i> -->
-      <img src='lasso.png', alt='Lasso Image'>
+      <img src='/images/lasso.png', alt='Lasso Image'>
     </div>
 
     <div class="w3-third">
