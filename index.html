@@ -119,21 +119,18 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-12" id="sumGraphDiv" style="display:inline-block;">
-                            <!-- <select id="columnSelect">
-                                <option value="attacktype1_txt">attacktype1_txt</option>
-                                <option value="city">city</option>
-                                <option value="country_txt">country_txt</option>
-                                <option value="gname">gname</option>
-                                <option value="provstate">provstate</option>
-                                <option value="region_txt">region_txt</option>
-                                <option value="targsubtype1_txt">targsubtype1_txt</option>
-                                <option value="targtype1_txt">targtype1_txt</option>
-                                <option value="weapdetail">weapdetail</option>
-                                <option value="weapsubtype1_txt">weapsubtype1_txt</option>
-                                <option value="weaptype1_txt"></option>
-                            </select> -->
+                        <!-- <div class="col-12" id="sumGraphDiv" style="display:inline-block;"> -->
+                        <div class="col-12" id="sumGraphDiv" style="display:none">
+  
 
+                        </div>
+                        <div id="summaryTable" style="width:100%; display: none;">
+                            <table class="table table-striped" >
+                                <div style="width:100%" class="text-center"><h3>Quick summary</h3></div>
+                                <tbody id="summaryTableBody" style="width:100%">
+                                 
+                                </tbody>
+                              </table>
                         </div>
                     </div>
                 </div>
@@ -465,6 +462,30 @@
         
         })
     }
+    function addRow(key, value){
+        const element = `<tr>
+                <td>${key}</td>
+                <td style="width:60%">${value}</td>
+                </tr>`;
+        $('#summaryTableBody').append(element)
+    }
+    function displaySummary(obj){
+        // empty out table
+        $('#sumGraphDiv').css('display', 'none')
+        $('#summaryTableBody').empty()
+        if(obj.region) addRow('Region', obj.region)
+        if(obj.country) addRow('Country', obj.country)
+        if(obj.city) addRow('City', obj.city)
+        if(obj.targtype1) addRow('Target', obj.targtype1)
+        if(obj.targsubtype1) addRow('Target detail', obj.targsubtype1)
+        if(obj.weaptype1) addRow('Weapon Type', obj.weaptype1)
+        if(obj.nkill) addRow('People killed', obj.nkill)
+        if(obj.success) addRow('Was successful?', obj.success==='1'?'Yes':'No')
+        if(obj.motive) addRow('Motive', obj.motive)
+        if(obj.suicide) addRow('Is suicide?', obj.suicide==='1'?'Yes':'No')
+        if(obj.summary) addRow('Brief summary', obj.summary)
+        $('#summaryTable').css('display', 'inline-block')
+    }
     // find dict by some item value from array
     function findElement(arr, propName, propValue) {
         for (var i=0; i < arr.length; i++)
@@ -545,6 +566,8 @@
                         var eventId = table.row(this).index();
                         const selectedEventId = table.cell({ row: eventId, column: 0 }).data();
                         // console.log('selectedEventId:', selectedEventId)
+                        const obj = select_data.find(e=>e.eventid===selectedEventId)
+                        return displaySummary(obj)
                     }else{
                         // select row only when ctrl is not pressed
                         const selectedElements = columnSelector.reduce((total, elem)=> {return elem?total+1:total}, 0)
@@ -553,6 +576,8 @@
                     }
                     const listOfColumns = getColumnSelections(columnSelector, total_keys);
                     // console.log('listOfColumns:', listOfColumns)
+                    $('#sumGraphDiv').css('display', 'inline-block')
+                    $('#summaryTable').css('display', 'none')
                     drawGraph(select_data, listOfColumns)
                 });
 
