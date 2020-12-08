@@ -75,6 +75,7 @@ function drawGraph(select_data,listOfColumns) {
 
     //needtodo
     //fix str str
+    //date int need fix
     //str bool
     //date bool
     //column number
@@ -524,7 +525,10 @@ function drawGraph(select_data,listOfColumns) {
         console.log("Not Supported column types")
     }
 }
-
+function clearGraph(){
+    d3.select("g#graphArea").selectAll("*").remove()
+    d3.select("g#graphArea").remove()
+}
 
 
 

@@ -265,6 +265,7 @@
           }
 
           function setSelectedLayers(layers) {
+              clearGraph()
               resetSelectedState();
               layers.forEach(layer => {
                   if (layer instanceof L.Marker) {
