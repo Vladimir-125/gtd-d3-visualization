@@ -84,8 +84,8 @@
 
       <div class="container-fluid">
           <div class="row">
-              <div class="col-xs-12 col-md-6">
-                  <div class="container-fluid">
+              <div class="col-xs-12 col-md-6 px-0">
+                  <div class="container-fluid px-0">
                       <div class="row">
                           <div class="col">
                             <div class="container-fluid">
@@ -110,11 +110,11 @@
                       </div>
                   </div>
               </div>
-              <div class="col-xs-12 col-md-6">
+              <div class="col-xs-12 col-md-6 px-0">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-12" style="display:inline-block;">
-                            <div class="container-fluid">
+                        <div class="col px-0" style="display:inline-block;">
+                            <div class="container-fluid px-0">
                                 <div class="row">
                                     <div class="col">
                                         <div class="col text-center">
@@ -502,6 +502,7 @@
         if(obj.targtype1) addRow('Target', obj.targtype1)
         if(obj.targsubtype1) addRow('Target detail', obj.targsubtype1)
         if(obj.weaptype1) addRow('Weapon Type', obj.weaptype1)
+        if(obj.weapdetail) addRow('Weapon Detail', obj.weapdetail)
         if(obj.nkill) addRow('People killed', obj.nkill)
         if(obj.success) addRow('Was successful?', obj.success==='1'?'Yes':'No')
         if(obj.motive) addRow('Motive', obj.motive)
@@ -525,10 +526,17 @@
             let select_keys = total_keys;
 
             // Load selected events data.
-            let select_data =  [];
+            const select_data =  [];
             for (let i=0; i < select_events.length; i++){
                 select_data.push(findElement(json_data, 'eventid', select_events[i]))
             }
+            // clone array before modification
+            let tableData = JSON.parse(JSON.stringify(select_data))
+            tableData.forEach(e=>{
+                if(e.summary.length>70) e.summary = e.summary.slice(0, 67) + '...'
+                if(e.motive.length>70) e.motive = e.motive.slice(0, 67) + '...'
+                if(e.weapdetail.length>70) e.weapdetail = e.weapdetail.slice(0, 67) + '...'
+            })
             if(isFirstTime){
                 // Set up for DataTables
                 let columnDef_list = [];
@@ -546,7 +554,7 @@
                 };
             
                 let table = $("#gtd-table").DataTable({
-                        data: select_data,
+                        data: tableData,
                         dom: 'Bfrti',
                         columns: columnDef_list,
                         buttons: [
