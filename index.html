@@ -41,6 +41,7 @@
   <link href="css/simple-sidebar.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="gtdGraph.js"></script>
+  <script src="id2json.js"></script>
 </head>
 
 <body>
@@ -181,21 +182,19 @@
   let markers = L.markerClusterGroup(clusterGroupOptions);
 
   $( document ).ready(async ()=> {
-    // load map data  
-    const res = await fetch('/data')
-      data = await res.json()
-      // load table data
-      const res2 = await fetch('/table-data')
-      json_data = await res2.json()
-      for(let i=0; i < json_data.length; i++){
-            let eventid = json_data[i]['eventid'];
-            json_data[i]['year'] = eventid.slice(0, 4);
-            json_data[i]['month'] = eventid.slice(4, 6);
-            json_data[i]['day'] = eventid.slice(6, 8);
-            json_data[i]['idx'] = eventid.slice(8, 12);
-        }
-      drawSlider()
-      drawMap(data)
+        // load map data  
+        const res = await fetch('/data')
+        data = await res.json()
+        // load table data
+        console.log('Start')
+        const res2 = await fetch('/table-data')
+        console.log('End1')
+        json_data = await res2.json()
+        // json_data = JSON.parse(await res2.text())
+        console.log('End2')
+        processJson(json_data)
+        drawSlider()
+        drawMap(data)
     $(document).keydown(function(e) {
         if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = true;
     }).keyup(function(e) {
@@ -433,7 +432,7 @@
     // table
     // Some routines
     // Should read from data.
-    const total_keys = ['eventid', 'year', 'month', 'day', 'idx', 'extended', 'region_txt', 'country_txt', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attacktype1_txt', 'targtype1_txt', 'targsubtype1_txt', 'gname', 'motive', 'weaptype1_txt', 'weapsubtype1_txt', 'weapdetail', 'nkill', 'nwound', 'dbsource', 'ishostkid', 'ransom'];
+    const total_keys = ['eventid', 'year', 'month', 'day', 'idx', 'extended', 'region', 'country', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attacktype1', 'targtype1', 'targsubtype1', 'gname', 'motive', 'weaptype1', 'weapsubtype1', 'weapdetail', 'nkill', 'nwound', 'dbsource', 'ishostkid', 'ransom'];
 
     // Text to display for each key
     let rename_keys = d3.scaleOrdinal()
@@ -449,7 +448,24 @@
     let summary_keys = d3.scaleOrdinal()
                         .domain(total_keys)
                         .range(['YYYYMMDDIIII', 'Occur year', 'Occur month', 'Occur day', 'Case idx', 'extended', 'region of terror', 'country', 'city', 'provstate', 'latitude', 'longitude', 'summary', 'multiple', 'success', 'suicide', 'attack type', 'target type', 'targsubtype', 'gname', 'motive', 'weapon type', 'weapon subtype', 'weapon detail', 'kill', 'wound', 'dbsource', 'ishostkid', 'ransom']);
-
+    function processJson(data){
+        data.forEach(e=>{
+            if(e.attacktype1 !=='') e.attacktype1 = id2attacktype1[e.attacktype1.toString()]
+            if(e.region !=='') e.region = id2region[e.region.toString()]
+            if(e.country !=='') e.country = id2country[e.country.toString()]
+            if(e.targsubtype1 !=='') e.targsubtype1 = id2targsubtype1[e.targsubtype1.toString()]
+            if(e.targtype1 !=='') e.targtype1 = id2targtype1[e.targtype1.toString()]
+            if(e.weapsubtype1 !=='') e.weapsubtype1 = id2weapsubtype1[e.weapsubtype1.toString()]
+            if(e.weaptype1 !=='') e.weaptype1 = id2weaptype1[e.weaptype1.toString()]
+            
+            const  eventid = e.eventid;
+            e.year = eventid.slice(0, 4);
+            e.month = eventid.slice(4, 6);
+            e.day = eventid.slice(6, 8);
+            e.idx = eventid.slice(8, 12);
+        
+        })
+    }
     // find dict by some item value from array
     function findElement(arr, propName, propValue) {
         for (var i=0; i < arr.length; i++)
@@ -495,8 +511,8 @@
                         ],
                         scrollX: true,
                         scrollY: 350, 
-                        // "scrollCollapse": true,
-                        // "paging":         false
+                        "scrollCollapse": true,
+                        "paging":         false
                     });
                 $('#gtd-table tbody')
                 .on( 'mouseenter', 'td', function () {
