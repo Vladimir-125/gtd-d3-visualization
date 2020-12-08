@@ -46,7 +46,7 @@
 
 <body>
 
-  <div class="d-flex" id="wrapper">
+  <div class="d-flex toggled" id="wrapper">
 
     <!-- Sidebar -->
     <div class="bg-light border-right" id="sidebar-wrapper">
@@ -544,13 +544,15 @@
                     if(ctrlDown){
                         var eventId = table.row(this).index();
                         const selectedEventId = table.cell({ row: eventId, column: 0 }).data();
-                        console.log('selectedEventId:', selectedEventId)
+                        // console.log('selectedEventId:', selectedEventId)
                     }else{
                         // select row only when ctrl is not pressed
+                        const selectedElements = columnSelector.reduce((total, elem)=> {return elem?total+1:total}, 0)
+                        if(selectedElements > 1 && !columnSelector[colIdx]) return 
                         columnSelector[colIdx] = !columnSelector[colIdx];
                     }
                     const listOfColumns = getColumnSelections(columnSelector, total_keys);
-                    console.log('listOfColumns:', listOfColumns)
+                    // console.log('listOfColumns:', listOfColumns)
                     drawGraph(select_data, listOfColumns)
                 });
 
