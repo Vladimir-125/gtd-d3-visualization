@@ -57,5 +57,13 @@ app.get('/time', (req, res)=>{
 
 });
 
+app.get('/guide', (req, res)=>{
+    // let rawdata = fs.readFileSync('data/dateToUnix_utc.json');
+    // let data = JSON.parse(rawdata);
+    // return res.status(200).json(data);
+    return res.sendFile(__dirname + '/user_guide.html')
+
+});
+
 
 app.listen(PORT, ()=> console.log(`Listening at port number ${PORT}...`))

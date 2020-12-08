@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+.w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+.fa-anchor,.fa-coffee {font-size:200px}
+</style>
+<body>
+
+<!-- Header -->
+<header class="w3-container w3-red w3-center" style="padding:128px 16px">
+  <h1 class="w3-margin w3-jumbo">TERRORVIS</h1>
+  <p class="w3-xlarge">Global Terrorism Anaylsis Tool</p>
+  <p class="w3-large">Welcome to TERRORVIS! TERRORVIS is interactive analysis tool for global terrorism.<br>This page is user guide for use this tool. We have four visualization in main vis page.</p>
+</header>
+
+<!-- First Grid -->
+<div class="w3-row-padding w3-padding-64 w3-container">
+  <div class="w3-content">
+    <div class="w3-third">
+      <h1>Time-Series Slider</h1>
+      <h5 class="w3-padding-0">The Time-series slider shows the number of cases by time. The number of cases is encoded with the height of the graph.</h5>
+
+      <h5 class="w3-text-grey">You can see the exact date and the number of cases by hovering over the Time-Series slider.
+        By brushing on the Time-series slider, you can zoom in to a specific time-term. if you want to back initial state, just click 'Reset zoom' button in the upper right corner of the map. The World map shows cases that belong to the selected time-term.</p>
+    </div>
+
+    <div class="w3-twothird">
+      <!-- <i class="fa fa-anchor w3-padding-64 w3-text-red"></i> -->
+      <img src='time-series-brush.png', alt='Slider Image'>
+    </div>
+  </div>
+</div>
+
+<!-- Second Grid -->
+<div class="w3-row-padding w3-light-grey w3-padding-64 w3-container">
+  <div class="w3-content">
+    <div class="w3-twothird">
+      <!-- <i class="fa fa-coffee w3-padding-64 w3-text-red w3-margin-right"></i> -->
+      <img src='lasso.png', alt='Lasso Image'>
+    </div>
+
+    <div class="w3-third">
+      <h1>World Map</h1>
+      <h5 class="w3-padding-0">World map shows the number of cases by region.
+        The region is encoded with a location on the map. And the number of cases in that region is encoded with the color and size of each circle.</h5>
+
+      <h5 class="w3-text-grey">Zoom in or out on the map by using the mouse scroll, 'plus/minus' button in the upper left corner of the map, or click by a specific region.
+        In a zoomed-in view, each cluster is split into smaller ones to represent a more precise location of cases and you can move the region by mouse swiping.
+        By clicking the 'lasso' button, you enter to lasso mode. The lasso mode can designate a specific region on map. Detailed data of the cases in the designated region are displayed in a table.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Third Grid -->
+<div class="w3-row-padding w3-padding-64 w3-container">
+    <div class="w3-content">
+      <div class="w3-third w3-center">
+        <i class="fa fa-coffee w3-padding-64 w3-text-red w3-margin-right"></i>
+      </div>
+  
+      <div class="w3-twothird">
+        <h1>Table and Chart</h1>
+        <h5 class="w3-padding-0">By Time-series slider and World map, we can designate interested time-term and region to analysis.
+            Table and Chart show detailed data and interesting features of selected cases.
+            Each case is encoded on each row of the table, and columns of the table represent properties or information of terrorism.</h5>
+    
+        <h5 class="w3-text-black">By clicking the header of the table, rows are sorted by the value of the selected header's column.
+            Because too much data to show, you can move the displayed part of the table by using the scroll bar.
+            And by toggle a specific column, the chart show statistic of toggled columns.</p>
+      </div>
+    </div>
+  </div>
+
+<!-- Footer -->
+<footer class="w3-container w3-red w3-padding-64 w3-center">  
+ <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+</footer>
+
+<script>
+// Used to toggle the menu on small screens when clicking on the menu button
+function myFunction() {
+  var x = document.getElementById("navDemo");
+  if (x.className.indexOf("w3-show") == -1) {
+    x.className += " w3-show";
+  } else { 
+    x.className = x.className.replace(" w3-show", "");
+  }
+}
+</script>
+
+</body>
+</html>
