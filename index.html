@@ -527,9 +527,10 @@
             let select_keys = total_keys;
 
             // Load selected events data.
-            const select_data =  [];
+            let select_data =  [];
             for (let i=0; i < select_events.length; i++){
                 select_data.push(findElement(json_data, 'eventid', select_events[i]))
+
             }
             // clone array before modification
             let tableData = JSON.parse(JSON.stringify(select_data))
@@ -539,6 +540,7 @@
                 if(e.weapdetail.length>70) e.weapdetail = e.weapdetail.slice(0, 67) + '...'
             })
             if(isFirstTime){
+                console.log(select_data)
                 // Set up for DataTables
                 let columnDef_list = [];
                 for(let i=0; i < select_keys.length; i++){
@@ -592,6 +594,7 @@
                 });
     
                 $('#gtd-table tbody').on( 'click', 'td', function () {
+                    console.log(select_data)
                     var colIdx = table.cell(this).index().column;
                     // list of selected columns
                     if(ctrlDown){
@@ -610,11 +613,13 @@
                     // console.log('listOfColumns:', listOfColumns)
                     $('#sumGraphDiv').css('display', 'inline-block')
                     $('#summaryTable').css('display', 'none')
-                    drawGraph(select_data, listOfColumns)
+                    const selData = select_data
+                    drawGraph(selData, listOfColumns)
                 });
 
                 isFirstTime = false;
             }else{
+                console.log("not_first_time")
                 let table = $("#gtd-table").DataTable();
                 // Load selected events data.
                 let select_data =  [];
