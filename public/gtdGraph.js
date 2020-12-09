@@ -146,8 +146,8 @@ function drawGraph(select_data,listOfColumns) {
         })
         let cScale = d3.scaleOrdinal(d3.schemeCategory10);
         compressedMono.push(others)
-        console.log(monoData)
-        console.log(compressedMono)
+        // console.log(monoData)
+        // console.log(compressedMono)
         if(monoData.length>10){
             monoData = compressedMono
             xScale = d3.scaleBand().domain(monoData.map(x=>x.kind)).range([0,width]).paddingOuter(0.1).paddingInner(0.1)
@@ -204,8 +204,8 @@ function drawGraph(select_data,listOfColumns) {
                     }
                     multiData.push({"kind":x,"val":count})
                 })
-                console.log(xData)
-                console.log(yMaxValue)
+                // console.log(xData)
+                // console.log(yMaxValue)
 
                 let compressedData = []
                 let others = {"kind":"Others","val":0}
@@ -279,7 +279,7 @@ function drawGraph(select_data,listOfColumns) {
                     "multiData":multiData,
                 }
             }
-        }else if(x_type=="day"){
+        }else if(x_type=="date"){
             if(y_type=="int"){
                 let xData = [...new Set(data.map(x=>x[x_col]))]
                 let yMaxValue=0
@@ -313,14 +313,15 @@ function drawGraph(select_data,listOfColumns) {
                         others["val"]+=d.val
                     }
                 })
-                console.log(xData)
-                console.log(yMaxValue)
+                // console.log(xData)
+                // console.log(yMaxValue)
                 if(multiData.length>10){
                     multiData = compressedData;
                     let xScale = d3.scaleBand().domain(multiData.map(d=>d.kind)).range([0,width]).paddingOuter(0.1).paddingInner(0.1)
                     let yScale = d3.scaleLinear().domain([0,Math.max(...multiData.map(d=>d.val))]).range([height,0])
                     let xAxis = d3.axisBottom(xScale)
                     let yAxis = d3.axisLeft(yScale)
+                    let cScale = d3.scaleOrdinal(d3.schemeCategory10);
                     return{
                         "xScale":xScale,
                         "yScale":yScale,
@@ -334,6 +335,7 @@ function drawGraph(select_data,listOfColumns) {
                     let yScale = d3.scaleLinear().domain([0,yMaxValue]).range([height,0])
                     let xAxis = d3.axisBottom(xScale)
                     let yAxis = d3.axisLeft(yScale)
+                    let cScale = d3.scaleOrdinal(d3.schemeCategory10);
                     return{
                         "xScale":xScale,
                         "yScale":yScale,
@@ -346,13 +348,13 @@ function drawGraph(select_data,listOfColumns) {
             }
         }
     }
-    console.log(selectedColumn)
-    console.log(selectedColumn.length)
+    // console.log(selectedColumn)
+    // console.log(selectedColumn.length)
 
     if(selectedColumn.length==1){
         //single column graph
         //create monoData
-        console.log("mono")
+        // console.log("mono")
         const axis = setupAxisMono(selectedColumn,selection,graph_width,graph_height)
         d3.select("g#xArea").call(axis.xAxis)
             .selectAll("text")
@@ -365,7 +367,7 @@ function drawGraph(select_data,listOfColumns) {
             });
         d3.select("g#yArea").call(axis.yAxis)
 
-        console.log(axis.monoData)
+        // console.log(axis.monoData)
         draw.selectAll("rect").data(axis.monoData,x=>x.kind).enter().append("rect")
             .attr("x",d=>axis.xScale(d.kind))
             .attr("y",d=>axis.yScale(d.count))
@@ -385,8 +387,8 @@ function drawGraph(select_data,listOfColumns) {
                 //str,int - bar
                 //create monoData, just like one column
                 const axis = setupAxisMulti(selectedColumn[0],col0Type,selectedColumn[1],col1Type,selection,graph_width,graph_height)
-                console.log(axis)
-                console.log(graph_height)
+                // console.log(axis)
+                // console.log(graph_height)
                 d3.select("g#xArea").call(axis.xAxis)
                     .selectAll("text")
                     .style("text-anchor", "end")
@@ -406,33 +408,43 @@ function drawGraph(select_data,listOfColumns) {
                     .attr("fill",d=>axis.color(d.kind))
             }
             else if(col1Type=="str"){
-                console.log("strstr")
+                // console.log("strstr")
                 //str,str - scatterpolt with size
                 //setup count function for same xyvals
-                const axis = setupAxisMulti(selectedColumn[0],col0Type,selectedColumn[1],col1Type,selection,graph_width,graph_height)
-                d3.select("g#xArea").call(axis.xAxis)
-                    .selectAll("text")
-                    .style("text-anchor", "end")
-                    .attr("dx", "-.8em")
-                    .attr("dy", ".15em")
-                    .style("font-size","9px")
-                    .attr("transform", function(d) {
-                        return "rotate(-35)"
-                    });
-                d3.select("g#yArea").call(axis.yAxis)
-                console.log(axis.multiData)
-                draw.selectAll("circle").data(axis.multiData).enter().append("circle")
-                    .attr("cx",d=>axis.xScale(d.x))
-                    .attr("cy",d=>{return graph_height-axis.yScale(d.y)})
-                    .attr("r",d=>d.count)
-                    .attr("fill",d=>axis.color(d.x))
-            }
+            //     const axis = setupAxisMulti(selectedColumn[0],col0Type,selectedColumn[1],col1Type,selection,graph_width,graph_height)
+            //     d3.select("g#xArea").call(axis.xAxis)
+            //         .selectAll("text")
+            //         .style("text-anchor", "end")
+            //         .attr("dx", "-.8em")
+            //         .attr("dy", ".15em")
+            //         .style("font-size","9px")
+            //         .attr("transform", function(d) {
+            //             return "rotate(-35)"
+            //         });
+            //     d3.select("g#yArea").call(axis.yAxis)
+            //     console.log(axis.multiData)
+            //     draw.selectAll("circle").data(axis.multiData).enter().append("circle")
+            //         .attr("cx",d=>axis.xScale(d.x))
+            //         .attr("cy",d=>{return graph_height-axis.yScale(d.y)})
+            //         .attr("r",d=>d.count)
+            //         .attr("fill",d=>axis.color(d.x))
+            // }
+            //
+            // else{
+            //     d3.select("g#graphArea").selectAll("*").remove()
+            //     d3.select("g#graphArea").remove()
+            //     d3.select("g#graphArea").append("text").style("text-align","center").html("This type of relationship is not appropriate or supported")
+            //     console.log("Not Supported column types")
 
+                d3.select("g#graphArea").selectAll("*").remove()
+                d3.select("g#graphArea").append("text").style("text-align","center").html("This type of relationship is not appropriate or supported")
+            }
             else{
                 d3.select("g#graphArea").selectAll("*").remove()
-                d3.select("g#graphArea").remove()
+                d3.select("g#graphArea").append("text").style("text-align","center").html("This type of relationship is not appropriate or supported")
                 console.log("Not Supported column types")
             }
+
 
         }
         else if(col0Type=="int"){
@@ -479,7 +491,7 @@ function drawGraph(select_data,listOfColumns) {
             }
             else{
                 d3.select("g#graphArea").selectAll("*").remove()
-                d3.select("g#graphArea").remove()
+                d3.select("g#graphArea").append("text").style("text-align","center").html("This type of relationship is not appropriate or supported")
                 console.log("Not Supported column types")
             }
         }
@@ -511,17 +523,21 @@ function drawGraph(select_data,listOfColumns) {
             }
             else{
                 d3.select("g#graphArea").selectAll("*").remove()
-                d3.select("g#graphArea").remove()
+                d3.select("g#graphArea").append("text").style("text-align","center").html("This type of relationship is not appropriate or supported")
                 console.log("Not Supported column types")
             }
+        }else{
+            d3.select("g#graphArea").selectAll("*").remove()
+            d3.select("g#graphArea").append("text").style("text-align","center").html("This type of relationship is not appropriate or supported")
+            console.log("Not Supported column types")
         }
     }else if(selectedColumn.length==0){
         d3.select("g#graphArea").selectAll("*").remove()
-        d3.select("g#graphArea").remove()
+        d3.select("g#graphArea").append("text").style("text-align","center").html("This type of relationship is not appropriate or supported")
         console.log("No columns selected")
     }else{
         d3.select("g#graphArea").selectAll("*").remove()
-        d3.select("g#graphArea").remove()
+        d3.select("g#graphArea").append("text").style("text-align","center").html("This type of relationship is not appropriate or supported")
         console.log("Not Supported column types")
     }
 }
