@@ -648,6 +648,10 @@
                     columnSelector[colIdx] = !columnSelector[colIdx];
                 }
                 const listOfColumns = getColumnSelections(columnSelector, total_keys);
+                if(listOfColumns.length===0){
+                    $('#sumGraphDiv').css('display', 'none')
+                    return
+                }
                 // console.log('listOfColumns:', listOfColumns)
                 $('#sumGraphDiv').css('display', 'inline-block')
                 $('#summaryTable').css('display', 'none')
