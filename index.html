@@ -519,6 +519,9 @@
     }
     let columnSelector = []
     let isFirstTime = true
+    let addMoreToggler = false
+    function setAddMoreToggler(val){addMoreToggler=val}
+    let existingTableData = []
     function drawTable(select_events){
             if(select_events.length > 300){
                 // break if user disagrees
@@ -531,10 +534,20 @@
 
             // Load selected events data.
             let select_data =  [];
+            if(addMoreToggler){
+                select_data = select_data.concat(existingTableData)
+                console.log('Concatenated')
+            }
             for (let i=0; i < select_events.length; i++){
                 select_data.push(findElement(json_data, 'eventid', select_events[i]))
 
             }
+            // set unique values
+            console.log(select_data)
+            select_data = select_data.filter((value, index, self) => self.indexOf(value) === index)
+            console.log(select_data)
+            // save current table data to later usage
+            existingTableData = select_data;
             // clone array before modification
             let tableData = JSON.parse(JSON.stringify(select_data))
             // truncate long strings
@@ -572,7 +585,19 @@
                     "scrollCollapse": true,
                     "paging":         false
                 });
-                
+                const addmore = $('<button class="btn btn-secondary" id="addMore">Add more events</button>')
+                $('#gtd-table_filter').prepend(addmore)
+                addmore.on('click', ()=>{
+                    // togle style
+                    if($('#addMore').attr('class') == 'btn btn-secondary'){
+                        $('#addMore').attr('class', 'btn btn-primary');
+                        setAddMoreToggler(true)
+                    } 
+                    else{
+                        $('#addMore').attr('class', 'btn btn-secondary');
+                        setAddMoreToggler(false)
+                    } 
+                })
                 isFirstTime = false;
             }else{
                 let table = $("#gtd-table").DataTable();
