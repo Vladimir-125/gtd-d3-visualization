@@ -520,7 +520,10 @@
     let columnSelector = []
     let isFirstTime = true
     function drawTable(select_events){
-            if(select_events.length > 300) return alert('Please select less than 300 events')
+            if(select_events.length > 300){
+                // break if user disagrees
+                if(!confirm(`You have selected ${select_events.length} events which can take some time to render.\nDo you want to continue?`)) return 
+            } 
             // Initialize
             columnSelector = total_keys.map(e=>false)
             // Mutable
