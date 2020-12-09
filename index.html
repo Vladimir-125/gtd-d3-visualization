@@ -520,9 +520,9 @@
     let columnSelector = []
     let isFirstTime = true
     function drawTable(select_events){
-        // Initialize
+            if(select_events.length > 300) return alert('Please select less than 300 events')
+            // Initialize
             columnSelector = total_keys.map(e=>false)
-
             // Mutable
             let select_keys = total_keys;
 
@@ -534,13 +534,14 @@
             }
             // clone array before modification
             let tableData = JSON.parse(JSON.stringify(select_data))
+            // truncate long strings
             tableData.forEach(e=>{
                 if(e.summary.length>70) e.summary = e.summary.slice(0, 67) + '...'
                 if(e.motive.length>70) e.motive = e.motive.slice(0, 67) + '...'
                 if(e.weapdetail.length>70) e.weapdetail = e.weapdetail.slice(0, 67) + '...'
             })
             if(isFirstTime){
-                console.log(select_data)
+                // console.log(select_data)
                 // Set up for DataTables
                 let columnDef_list = [];
                 for(let i=0; i < select_keys.length; i++){
@@ -555,83 +556,78 @@
                         .attr('class', `text-center`)
                         .text(rename_keys(select_keys[i]));
                 };
-            
+        
                 let table = $("#gtd-table").DataTable({
-                        data: tableData,
-                        dom: 'Bfrti',
-                        columns: columnDef_list,
-                        buttons: [
-                            'colvis'
-                        ],
-                        scrollX: true,
-                        scrollY: 300, 
-                        "scrollCollapse": true,
-                        "paging":         false
-                    });
-                $('#gtd-table tbody')
-                .on( 'mouseenter', 'td', function () {
-                    var colIdx = table.cell(this).index().column;
-                    // $( table.cells().nodes() ).removeClass( 'highlight' );
-                    // highlight if not selected
-                    if(!columnSelector[colIdx]){
-                        $(table.column(colIdx).nodes()).addClass('highlight');
-                    }
-                    if(ctrlDown){
-                        var rowIdx = table.row(this).index();
-                        $(table.row(rowIdx).nodes()).addClass('highlight');
-                    }
+                    data: tableData,
+                    dom: 'Bfrti',
+                    columns: columnDef_list,
+                    buttons: [
+                        'colvis'
+                    ],
+                    scrollX: true,
+                    scrollY: 300, 
+                    "scrollCollapse": true,
+                    "paging":         false
                 });
-                $('#gtd-table tbody')
-                .on( 'mouseleave', 'td', function () {
-                    var rowIdx = table.row(this).index();
-                    $( table.row(rowIdx).nodes()).removeClass('highlight');
                 
-                    // highlight if not selected
-                    var colIdx = table.cell(this).index().column;
-                    if(!columnSelector[colIdx]){
-                        $( table.column( colIdx ).nodes() ).removeClass( 'highlight' );
-                    }
-                });
-    
-                $('#gtd-table tbody').on( 'click', 'td', function () {
-                    console.log(select_data)
-                    var colIdx = table.cell(this).index().column;
-                    // list of selected columns
-                    if(ctrlDown){
-                        var eventId = table.row(this).index();
-                        const selectedEventId = table.cell({ row: eventId, column: 0 }).data();
-                        // console.log('selectedEventId:', selectedEventId)
-                        const obj = select_data.find(e=>e.eventid===selectedEventId)
-                        return displaySummary(obj)
-                    }else{
-                        // select row only when ctrl is not pressed
-                        const selectedElements = columnSelector.reduce((total, elem)=> {return elem?total+1:total}, 0)
-                        if(selectedElements > 1 && !columnSelector[colIdx]) return 
-                        columnSelector[colIdx] = !columnSelector[colIdx];
-                    }
-                    const listOfColumns = getColumnSelections(columnSelector, total_keys);
-                    // console.log('listOfColumns:', listOfColumns)
-                    $('#sumGraphDiv').css('display', 'inline-block')
-                    $('#summaryTable').css('display', 'none')
-                    const selData = select_data
-                    drawGraph(selData, listOfColumns)
-                });
-
                 isFirstTime = false;
             }else{
-                console.log("not_first_time")
                 let table = $("#gtd-table").DataTable();
-                // Load selected events data.
-                let select_data =  [];
-                for (let i=0; i < select_events.length; i++){
-                    select_data.push(findElement(json_data, 'eventid', select_events[i]))
-                }
                 table.clear();
-                table.rows.add(select_data);
+                table.rows.add(tableData);
                 table.draw();
             }
+            // remove old bindings
+            $('#gtd-table tbody td').off('mouseenter').off('mouseleave').off('click');
+            // bind new 
+            $('#gtd-table tbody td')
+            .on( 'mouseenter', function () {
+                var colIdx = $("#gtd-table").DataTable().cell(this).index().column;
+                // $( table.cells().nodes() ).removeClass( 'highlight' );
+                // highlight if not selected
+                if(!columnSelector[colIdx]){
+                    $($("#gtd-table").DataTable().column(colIdx).nodes()).addClass('highlight');
+                }
+                if(ctrlDown){
+                    var rowIdx = $("#gtd-table").DataTable().row(this).index();
+                    $($("#gtd-table").DataTable().row(rowIdx).nodes()).addClass('highlight');
+                }
+            })
+            .on( 'mouseleave', function () {
+                var rowIdx = $("#gtd-table").DataTable().row(this).index();
+                $( $("#gtd-table").DataTable().row(rowIdx).nodes()).removeClass('highlight');
+            
+                // highlight if not selected
+                var colIdx = $("#gtd-table").DataTable().cell(this).index().column;
+                if(!columnSelector[colIdx]){
+                    $($("#gtd-table").DataTable().column( colIdx ).nodes() ).removeClass( 'highlight' );
+                }
+            })
+            .on( 'click', function () {
+                var colIdx = $("#gtd-table").DataTable().cell(this).index().column;
+                // list of selected columns
+                if(ctrlDown){
+                    var eventId = $("#gtd-table").DataTable().row(this).index();
+                    const selectedEventId = $("#gtd-table").DataTable().cell({ row: eventId, column: 0 }).data();
+                    // console.log('selectedEventId:', selectedEventId)
+                    const obj = select_data.find(e=>e.eventid===selectedEventId)
+                    return displaySummary(obj)
+                }else{
+                    // select row only when ctrl is not pressed
+                    const selectedElements = columnSelector.reduce((total, elem)=> {return elem?total+1:total}, 0)
+                    console.log('Selected elements', getColumnSelections(columnSelector, total_keys))
+                    if(selectedElements > 1 && !columnSelector[colIdx]) return 
+                    columnSelector[colIdx] = !columnSelector[colIdx];
+                }
+                const listOfColumns = getColumnSelections(columnSelector, total_keys);
+                // console.log('listOfColumns:', listOfColumns)
+                $('#sumGraphDiv').css('display', 'inline-block')
+                $('#summaryTable').css('display', 'none')
+                const selData = select_data
+                drawGraph(selData, listOfColumns)
+            });
         };
-       function getColumnSelections(selections, total_keys){
+    function getColumnSelections(selections, total_keys){
            if(selections.legend!== total_keys.legend) return null;
            const listOfCols = []
            selections.forEach((e, i)=>{
@@ -640,7 +636,7 @@
                } 
            })
            return listOfCols;
-       }
+    }
    
 </script>
 <!-- <script>
